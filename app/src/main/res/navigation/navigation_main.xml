@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation_main"
+    app:startDestination="@id/fg_main">
+    <fragment
+        android:id="@+id/fg_main"
+        android:name="com.example.alldocunemtreader.ui.homepage.HomePageFragment"
+        android:label="HomePageFragment"
+        tools:layout="@layout/fragment_home_page">
+        <action
+            android:id="@+id/action_fg_main_to_classificationDisplayFragment"
+            app:destination="@id/fg_classification_display" />
+        <action
+            android:id="@+id/action_fg_main_to_fg_change_language"
+            app:destination="@id/fg_change_language" />
+        <action
+            android:id="@+id/action_fg_main_to_searchFragment"
+            app:destination="@id/fg_search" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/fg_classification_display"
+        android:name="com.example.alldocunemtreader.ui.classification.ClassificationDisplayFragment"
+        android:label="fragment_classification_display"
+        tools:layout="@layout/fragment_classification_display" />
+
+    <fragment
+        android:id="@+id/fg_change_language"
+        android:name="com.example.alldocunemtreader.ui.language.ChangeLanguageFragment"
+        android:label="fragment_change_language"
+        tools:layout="@layout/fragment_change_language" />
+    <fragment
+        android:id="@+id/fg_search"
+        android:name="com.example.alldocunemtreader.ui.search.SearchFragment"
+        android:label="fragment_search"
+        tools:layout="@layout/fragment_search" />
+
+
+</navigation>
