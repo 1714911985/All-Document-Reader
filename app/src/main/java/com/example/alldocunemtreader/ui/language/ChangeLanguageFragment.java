@@ -69,7 +69,7 @@ public class ChangeLanguageFragment extends Fragment implements View.OnClickList
      */
     private void setToolbarButton() {
         tbChangeLanguage.setNavigationIcon(R.drawable.ic_back_black);
-        tbChangeLanguage.setOnClickListener(new View.OnClickListener() {
+        tbChangeLanguage.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 NavController navController = Navigation.findNavController(requireView());

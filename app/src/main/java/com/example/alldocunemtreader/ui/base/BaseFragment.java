@@ -2,7 +2,9 @@ package com.example.alldocunemtreader.ui.base;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -33,6 +36,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.io.File;
 import java.util.List;
 import java.util.Objects;
 
@@ -43,6 +47,8 @@ import java.util.Objects;
  */
 public abstract class BaseFragment extends Fragment
         implements RecycleListAdapter.OnShowFileDetailsBottomSheetDialogListener, View.OnClickListener {
+    private static final String AUTHORITY = "com.example.alldocunemtreader.fileProvider";
+    private static final String SHARE = "share";
 
     private BottomSheetDialog bottomSheetDialog;
     private Dialog dlFileInfo, dlShowRename, dlJudgeDelete;
@@ -215,9 +221,8 @@ public abstract class BaseFragment extends Fragment
         } else if (v.getId() == R.id.ib_file_details_delete) {
             showJudgeDeleteDialog();
         } else if (v.getId() == R.id.ib_file_details_share) {
-            // TODO 分享文件
-            //FileShareHelper.shareFile(requireActivity(), currentFile.getPath(), DocumentUtils.getMimeTypeByType(currentFile.getPath()));
             bottomSheetDialog.dismiss();
+            shareFile();
         } else if (v.getId() == R.id.btn_rename_dialog_cancel) {
             dlShowRename.dismiss();
         } else if (v.getId() == R.id.btn_rename_dialog_confirm) {
@@ -231,6 +236,18 @@ public abstract class BaseFragment extends Fragment
             // TODO 文件删除
             dlJudgeDelete.dismiss();
         }
+    }
+
+    private void shareFile() {
+        Uri uri = FileProvider.getUriForFile(requireActivity(),
+                AUTHORITY,
+                new File(currentFile.getPath()));
+        Intent share = new Intent(Intent.ACTION_SEND);
+        share.addCategory(Intent.CATEGORY_DEFAULT);
+        share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        share.setType("*/*");
+        share.putExtra(Intent.EXTRA_STREAM, uri);
+        startActivity(Intent.createChooser(share, SHARE));
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

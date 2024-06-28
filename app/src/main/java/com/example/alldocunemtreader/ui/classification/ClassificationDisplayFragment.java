@@ -70,7 +70,7 @@ public class ClassificationDisplayFragment extends Fragment {
     private void setToolBarButton() {
         tbClassificationDisplay.setNavigationIcon(R.drawable.ic_back);
         changeToolbarTitle();
-        tbClassificationDisplay.setOnClickListener(new View.OnClickListener() {
+        tbClassificationDisplay.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 NavController navController = Navigation.findNavController(requireView());
