@@ -30,11 +30,11 @@ public class BaseViewModel extends AndroidViewModel {
         return baseRepository.getIsFavoriteLiveData();
     }
 
-    public void changeFileName(String newFileName,DocumentInfo currentFile) {
-        baseRepository.changeFileName(newFileName,currentFile);
+    public void changeFileName(String newFileName, DocumentInfo currentFile) {
+        baseRepository.changeFileName(newFileName, currentFile);
     }
 
-    public void deleteFile(int id) {
-        baseRepository.deleteFile(id);
+    public void deleteFile(DocumentInfo currentFile) {
+        baseRepository.deleteFile(currentFile);
     }
 }

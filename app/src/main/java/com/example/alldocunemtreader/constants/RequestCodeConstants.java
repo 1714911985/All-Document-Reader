@@ -15,6 +15,6 @@ public class RequestCodeConstants {
 
     //Base相关
     public final static Integer MEDIASTORE_FILENAME_UPDATE_FAILED = 3001;
-    public final static Integer NEW_FILE_NAME_IS_NULL = 3002;
-    public final static Integer DATABASE_FILENAME_UPDATE_SUCCESS = 3002;
+    public final static Integer NEW_FILE_NAME_CAN_NOT_NULL = 3002;
+    public final static Integer DATABASE_FILENAME_UPDATE_SUCCESS = 3003;
 }

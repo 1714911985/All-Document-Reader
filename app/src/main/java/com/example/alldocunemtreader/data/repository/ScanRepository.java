@@ -2,15 +2,11 @@ package com.example.alldocunemtreader.data.repository;
 
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
-
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 import com.example.alldocunemtreader.constants.DocumentRelatedConstants;
 import com.example.alldocunemtreader.constants.MMKVKeyConstants;
@@ -23,8 +19,6 @@ import com.example.alldocunemtreader.utils.DocumentUtils;
 import com.example.alldocunemtreader.utils.EventBusUtils;
 import com.example.alldocunemtreader.utils.MMKVManager;
 import com.example.alldocunemtreader.utils.ThreadPoolManager;
-
-import org.greenrobot.eventbus.EventBus;
 
 import java.util.Objects;
 

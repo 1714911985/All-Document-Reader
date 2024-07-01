@@ -41,6 +41,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.io.File;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Author: Eccentric
@@ -154,11 +155,29 @@ public abstract class BaseFragment extends Fragment
         //获取文件后缀
         String fileExtension = DocumentUtils.getFileExtension(currentFile.getName());
         String newFileNameWithoutExtension = cetRenameDialogEditText.getText().toString();
+        Log.e("TAG", "newFileNameWithoutExtension: " + newFileNameWithoutExtension);
+        Log.e("TAG", "!TextUtils.isEmpty(newFileNameWithoutExtension): " + !TextUtils.isEmpty(newFileNameWithoutExtension));
         if (!TextUtils.isEmpty(newFileNameWithoutExtension)) {
-            final String newFileName = newFileNameWithoutExtension + fileExtension;
-            baseViewModel.changeFileName(newFileName, currentFile);
+            File oldFile = new File(currentFile.getPath());
+            Log.e("TAG", "changeFileName: " + currentFile.getPath());
+            File newFile = new File(oldFile.getParent() + File.separator + newFileNameWithoutExtension + fileExtension);
+            Log.e("TAG", "changeFileName: " + oldFile.getParent() + File.separator + newFileNameWithoutExtension + fileExtension);
+            ThreadPoolManager.getInstance().executeSingle(new Runnable() {
+                @Override
+                public void run() {
+                    if (oldFile.exists()) {
+                        if (oldFile.renameTo(newFile)) {
+                            final String newFileName = newFileNameWithoutExtension + fileExtension;
+                            baseViewModel.changeFileName(newFileName, currentFile);
+                        } else {
+                            EventBusUtils.post(new EventBusMessage<>(RequestCodeConstants.MEDIASTORE_FILENAME_UPDATE_FAILED, null));
+                        }
+                    }
+                }
+            });
         } else {
-            EventBusUtils.post(new EventBusMessage<>(RequestCodeConstants.NEW_FILE_NAME_IS_NULL, null));
+            Log.e("TAG", "--------------------");
+            EventBusUtils.post(new EventBusMessage<>(RequestCodeConstants.NEW_FILE_NAME_CAN_NOT_NULL, null));
         }
         dlShowRename.dismiss();
     }
@@ -228,8 +247,8 @@ public abstract class BaseFragment extends Fragment
         } else if (v.getId() == R.id.btn_rename_dialog_cancel) {
             dlShowRename.dismiss();
         } else if (v.getId() == R.id.btn_rename_dialog_confirm) {
-            // TODO 文件重命名
             dlShowRename.dismiss();
+            changeFileName();
         } else if (v.getId() == R.id.btn_document_ok) {
             dlFileInfo.dismiss();
         } else if (v.getId() == R.id.btn_delete_dialog_cancel) {
@@ -270,7 +289,7 @@ public abstract class BaseFragment extends Fragment
                     @Override
                     public void run() {
                         delete[0] = file.delete();
-                        baseViewModel.deleteFile(currentFile.getId());
+                        baseViewModel.deleteFile(currentFile);
                     }
                 });
             }
@@ -278,22 +297,48 @@ public abstract class BaseFragment extends Fragment
         baseViewModel.getIsFavoriteLiveData().observe(getViewLifecycleOwner(), new Observer<Integer>() {
             @Override
             public void onChanged(Integer integer) {
-                Toast.makeText(requireActivity(), delete[0] ? "ok" : "err", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireActivity(), delete[0] ? getResources().getText(R.string.delete_success) : getResources().getText(R.string.delete_failed), Toast.LENGTH_SHORT).show();
                 EventBusUtils.post(new EventBusMessage<>(RequestCodeConstants.REQUEST_REFRESH, ArrangementHelper.getViewSettings()));
             }
         });
     }
 
+    private static boolean flag = true;
+
+    private void countDown() {
+        ThreadPoolManager.getInstance().schedule(new Runnable() {
+            @Override
+            public void run() {
+                flag = true;
+            }
+        }, 200, TimeUnit.MILLISECONDS);
+    }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void messageEventBusBase(EventBusMessage<List<Integer>> message) {
-        if (Objects.equals(message.getCode(), RequestCodeConstants.NEW_FILE_NAME_IS_NULL)) {
-            Toast.makeText(requireActivity(), getResources().getText(R.string.file_name_not_null), Toast.LENGTH_SHORT).show();
+        Log.e("TAG", "messageEventBusBase: " + message.getCode());
+        if (Objects.equals(message.getCode(), RequestCodeConstants.NEW_FILE_NAME_CAN_NOT_NULL)) {
+            if (flag) {
+                Toast.makeText(requireActivity(), getResources().getText(R.string.file_name_not_null), Toast.LENGTH_SHORT).show();
+                flag = false;
+                countDown();
+            }
         } else if (Objects.equals(message.getCode(), RequestCodeConstants.MEDIASTORE_FILENAME_UPDATE_FAILED)) {
             //MediaStore更新文件名失败
-            Toast.makeText(requireActivity(), getResources().getText(R.string.file_name_update_failed), Toast.LENGTH_SHORT).show();
+            if (flag) {
+                Toast.makeText(requireActivity(), getResources().getText(R.string.file_name_update_failed), Toast.LENGTH_SHORT).show();
+                flag = false;
+                countDown();
+            }
         } else if (Objects.equals(message.getCode(), RequestCodeConstants.DATABASE_FILENAME_UPDATE_SUCCESS)) {
             //文件名更新成功
-            Toast.makeText(requireActivity(), getResources().getText(R.string.file_name_update_success), Toast.LENGTH_SHORT).show();
+            if (flag) {
+                Toast.makeText(requireActivity(), getResources().getText(R.string.file_name_update_success), Toast.LENGTH_SHORT).show();
+                EventBusUtils.post(new EventBusMessage<>(RequestCodeConstants.REQUEST_REFRESH, ArrangementHelper.getViewSettings()));
+                flag = false;
+                countDown();
+            }
+
         }
     }
 

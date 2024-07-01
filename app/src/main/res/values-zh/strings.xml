@@ -82,4 +82,6 @@
     <string name="last_modified">最后修改时间</string>
     <string name="ok">确认</string>
     <string name="delete_dialog_text">您真的希望删除这个文件吗？</string>
+    <string name="delete_success">删除成功!</string>
+    <string name="delete_failed">删除失败!</string>
 </resources>

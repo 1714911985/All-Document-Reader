@@ -81,5 +81,7 @@
     <string name="last_modified">Last Modified</string>
     <string name="ok">OK</string>
     <string name="delete_dialog_text">Do you really want to delete this file?</string>
+    <string name="delete_success">Delete success!</string>
+    <string name="delete_failed">Delete failed!</string>
 
 </resources>
