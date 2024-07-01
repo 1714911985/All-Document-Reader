@@ -37,7 +37,7 @@ public class ScanRepository {
     private static final String EXTERNAL = "external";
     private final Context context;
     private final DocumentInfoDao documentInfoDao;
-    private boolean isDelete;//判断哪些数据是在两次扫描之间已经被删除过的
+    private int isDelete;//判断哪些数据是在两次扫描之间已经被删除过的
 
     public ScanRepository(Context context) {
         this.context = context;
@@ -77,6 +77,8 @@ public class ScanRepository {
                         int columnIndexOfSize = cursor.
                                 getColumnIndexOrThrow(MediaStore.Files.FileColumns.SIZE);
 
+                        isDelete = MMKVManager.decodeInt(MMKVKeyConstants.IS_DELETE, 0);
+                        Log.e("TAG", "decodeBool: " + isDelete);
                         while (cursor.moveToNext()) {
                             String pathStr = cursor.getString(columnIndexOfData);
                             long dateModifiedLong = cursor.getLong(columnIndexOfDateModified);
@@ -86,22 +88,25 @@ public class ScanRepository {
                             int index = pathStr.lastIndexOf('/');
                             String fileName = pathStr.substring(index + 1).toLowerCase();
                             String fileType = DocumentUtils.getFileType(fileName);
-                            isDelete = !MMKVManager.decodeBool(MMKVKeyConstants.IS_DELETE, false);
                             DocumentInfo queryDocumentByPath = documentInfoDao.queryDocumentByPath(pathStr);
                             if (!Objects.isNull(queryDocumentByPath)) {
                                 documentInfoDao.update(fileName, pathStr, sizeLong, fileType,
-                                        dateAddedLong, dateModifiedLong, !isDelete);
+                                        dateAddedLong, dateModifiedLong, 1-isDelete);
+                                Log.e("TAG", "update: " + (1-isDelete));
                             } else {
                                 DocumentInfo files = new DocumentInfo(fileName, pathStr, sizeLong, fileType,
-                                        dateAddedLong, dateModifiedLong, 0L, 0, !isDelete);
+                                        dateAddedLong, dateModifiedLong, 0L, 0, 1-isDelete);
                                 documentInfoDao.insert(files);
+                                Log.e("TAG", "insert: " + (1-isDelete));
                             }
                         }
                     }
                     cursor.close();
                 }
                 documentInfoDao.delete(isDelete);
-                MMKVManager.encode(MMKVKeyConstants.IS_DELETE, !isDelete);
+                Log.e("TAG", "delete: " + isDelete);
+                MMKVManager.encode(MMKVKeyConstants.IS_DELETE, 1-isDelete);
+                Log.e("TAG", "encode: " + (1-isDelete));
                 EventBusUtils
                         .post(new EventBusMessage<>(RequestCodeConstants.REQUEST_SCAN_FINISHED, null));
             }

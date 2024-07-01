@@ -33,4 +33,8 @@ public class BaseViewModel extends AndroidViewModel {
     public void changeFileName(String newFileName,DocumentInfo currentFile) {
         baseRepository.changeFileName(newFileName,currentFile);
     }
+
+    public void deleteFile(int id) {
+        baseRepository.deleteFile(id);
+    }
 }

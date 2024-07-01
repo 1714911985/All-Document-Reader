@@ -1,11 +1,11 @@
 package com.example.alldocunemtreader.ui.main;
 
 import android.app.Application;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 
+import com.example.alldocunemtreader.data.repository.DocumentInfoRepository;
 import com.example.alldocunemtreader.data.repository.ScanRepository;
 
 /**
@@ -16,7 +16,7 @@ import com.example.alldocunemtreader.data.repository.ScanRepository;
 public class MainViewModel extends AndroidViewModel {
     private final ScanRepository scanRepository;
 
-    public MainViewModel(@NonNull Application application, ScanRepository scanRepository) {
+    public MainViewModel(@NonNull Application application, ScanRepository scanRepository, DocumentInfoRepository documentInfoRepository) {
         super(application);
         this.scanRepository = scanRepository;
     }

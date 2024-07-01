@@ -22,10 +22,10 @@ public interface DocumentInfoDao {
             "createdTime = :dateAddedLong, changedTime = :dateModifiedLong, " +
             "isDelete = :isDelete WHERE path = :pathStr")
     void update(String name, String pathStr, long sizeLong,
-                String type, long dateAddedLong, long dateModifiedLong, boolean isDelete);
+                String type, long dateAddedLong, long dateModifiedLong, int isDelete);
 
     @Query("DELETE FROM documents WHERE isDelete = :isDelete")
-    void delete(boolean isDelete);
+    void delete(int isDelete);
 
     @Query("SELECT * FROM documents where path = :path")
     DocumentInfo queryDocumentByPath(String path);
@@ -290,5 +290,6 @@ public interface DocumentInfoDao {
     @Query("SELECT * FROM documents WHERE latestTime != 0 ORDER BY size DESC")
     List<DocumentInfo> getRecentDocumentInfoSortByFileSizeDescending();
 
-
+    @Query("DELETE FROM documents WHERE id = :id")
+    void deleteById(int id);
 }

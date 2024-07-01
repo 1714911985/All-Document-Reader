@@ -35,9 +35,10 @@ public class SearchRepository {
         ThreadPoolManager.getInstance().executeSingle(new Runnable() {
             @Override
             public void run() {
-                List<DocumentInfo> documentInfoList;
+                List<DocumentInfo> documentInfoList = null;
+
                 if (TextUtils.isEmpty(text)){
-                    documentInfoList = documentInfoDao.getAllDocuments();
+                   // documentInfoList = documentInfoDao.getAllDocuments();
                 }else {
                     documentInfoList = documentInfoDao.fuzzyGetDocuments(text);
                 }

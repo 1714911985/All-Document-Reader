@@ -151,7 +151,7 @@ public class DocumentUtils {
     }
 
     /**
-     * 根据完整文件名获取后缀
+     * 根据完整文件名获取后缀   .xxx
      * @param fileName
      * @return
      */

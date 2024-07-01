@@ -21,7 +21,7 @@ public class DocumentInfo {
     private long changedTime;
     private long latestTime;
     private int isFavorite;
-    private boolean isDelete;
+    private int isDelete;
 
     public DocumentInfo() {
     }
@@ -35,7 +35,7 @@ public class DocumentInfo {
                         long changedTime,
                         long latestTime,
                         int isFavorite,
-                        boolean isDelete) {
+                        int isDelete) {
         this.name = name;
         this.path = path;
         this.size = size;
@@ -119,11 +119,28 @@ public class DocumentInfo {
         this.isFavorite = isFavorite;
     }
 
-    public boolean isDelete() {
+    public int getIsDelete() {
         return isDelete;
     }
 
-    public void setDelete(boolean delete) {
-        isDelete = delete;
+    public void setIsDelete(int isDelete) {
+        this.isDelete = isDelete;
+    }
+
+    @Override
+    @Ignore
+    public String toString() {
+        return "DocumentInfo{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", path='" + path + '\'' +
+                ", size=" + size +
+                ", type='" + type + '\'' +
+                ", createdTime=" + createdTime +
+                ", changedTime=" + changedTime +
+                ", latestTime=" + latestTime +
+                ", isFavorite=" + isFavorite +
+                ", isDelete=" + isDelete +
+                '}';
     }
 }

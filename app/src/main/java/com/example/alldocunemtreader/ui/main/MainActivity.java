@@ -159,6 +159,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onRestart() {
+        super.onRestart();
+        checkAndRequestPermissionThenScan();
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         ScreenshotObserver.unregisterScreenshotObserver(this, screenshotObserver);

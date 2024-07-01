@@ -46,7 +46,8 @@ public class NotificationHelper {
         // 设置点击通知后的操作
         Intent intent = new Intent(context, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent
-                .getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                .getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+
 
         Notification permanentNotification = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.logo_app)

@@ -23,8 +23,8 @@ import com.example.alldocunemtreader.utils.ThreadPoolManager;
  * Description: com.example.alldocunemtreader.data.repository.BaseRepository
  */
 public class BaseRepository {
-    private Context context;
-    private DocumentInfoDao documentInfoDao;
+    private final Context context;
+    private final DocumentInfoDao documentInfoDao;
     private MutableLiveData<Integer> isFavoriteLiveData = new MutableLiveData<>();
 
     public BaseRepository(Context context) {
@@ -73,5 +73,10 @@ public class BaseRepository {
         return isFavoriteLiveData;
     }
 
+
+    public void deleteFile(int id) {
+        documentInfoDao.deleteById(id);
+        isFavoriteLiveData.postValue(id);
+    }
 
 }

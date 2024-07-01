@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -30,6 +31,7 @@ import com.example.alldocunemtreader.ui.common.adapter.RecycleListAdapter;
 import com.example.alldocunemtreader.utils.ArrangementHelper;
 import com.example.alldocunemtreader.utils.DocumentUtils;
 import com.example.alldocunemtreader.utils.EventBusUtils;
+import com.example.alldocunemtreader.utils.ThreadPoolManager;
 import com.example.alldocunemtreader.viewmodelfactory.BaseViewModelFactory;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
@@ -233,8 +235,8 @@ public abstract class BaseFragment extends Fragment
         } else if (v.getId() == R.id.btn_delete_dialog_cancel) {
             dlJudgeDelete.dismiss();
         } else if (v.getId() == R.id.btn_delete_dialog_confirm) {
-            // TODO 文件删除
             dlJudgeDelete.dismiss();
+            deleteFile();
         }
     }
 
@@ -248,6 +250,38 @@ public abstract class BaseFragment extends Fragment
         share.setType("*/*");
         share.putExtra(Intent.EXTRA_STREAM, uri);
         startActivity(Intent.createChooser(share, SHARE));
+    }
+
+    private void deleteFile() {
+        final boolean[] delete = {false};
+        int index = currentFile.getPath().lastIndexOf("/");
+        String parent = currentFile.getPath().substring(0, index);
+        File dir = new File(parent);
+        if (!dir.isDirectory()) {
+            return;
+        }
+        File[] files = dir.listFiles();
+        if (files == null) {
+            return;
+        }
+        for (File file : files) {
+            if (Objects.equals(file.getName(), currentFile.getName())) {
+                ThreadPoolManager.getInstance().executeSingle(new Runnable() {
+                    @Override
+                    public void run() {
+                        delete[0] = file.delete();
+                        baseViewModel.deleteFile(currentFile.getId());
+                    }
+                });
+            }
+        }
+        baseViewModel.getIsFavoriteLiveData().observe(getViewLifecycleOwner(), new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer integer) {
+                Toast.makeText(requireActivity(), delete[0] ? "ok" : "err", Toast.LENGTH_SHORT).show();
+                EventBusUtils.post(new EventBusMessage<>(RequestCodeConstants.REQUEST_REFRESH, ArrangementHelper.getViewSettings()));
+            }
+        });
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
