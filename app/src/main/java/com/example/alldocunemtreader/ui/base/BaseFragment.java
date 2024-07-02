@@ -116,25 +116,15 @@ public abstract class BaseFragment extends Fragment
                 ibFileDetailsFavorite.setBackground(new ColorDrawable(ContextCompat.getColor(requireActivity(),
                         1 - currentFile.getIsFavorite() == 0 ? R.color.very_light_blue : R.color.light_yellow)));
                 ibFileDetailsFavorite.setSelected(1 - currentFile.getIsFavorite() != 0);
-                refresh();
+                baseViewModel.refresh();
             }
         });
         bottomSheetDialog.dismiss();
     }
 
     /**
-     * 刷新RecucleView
-     */
-    private void refresh() {
-        //刷新
-        EventBusUtils.post(new EventBusMessage<>(RequestCodeConstants.REQUEST_REFRESH,
-                ArrangementHelper.getViewSettings()));
-    }
-
-    /**
      * 展示 重命名 弹窗
      */
-
     private void showRenameDialog() {
         bottomSheetDialog.dismiss();
         dlShowRename = new Dialog(requireActivity(), R.style.CustomDialogTheme);
@@ -155,28 +145,8 @@ public abstract class BaseFragment extends Fragment
     }
 
     private void changeFileName() {
-        //获取文件后缀
-        String fileExtension = DocumentUtils.getFileExtension(currentFile.getName());
         String newFileNameWithoutExtension = cetRenameDialogEditText.getText().toString();
-        if (!TextUtils.isEmpty(newFileNameWithoutExtension)) {
-            File oldFile = new File(currentFile.getPath());
-            File newFile = new File(oldFile.getParent() + File.separator + newFileNameWithoutExtension + fileExtension);
-            ThreadPoolManager.getInstance().executeSingle(new Runnable() {
-                @Override
-                public void run() {
-                    if (oldFile.exists()) {
-                        if (oldFile.renameTo(newFile)) {
-                            final String newFileName = newFileNameWithoutExtension + fileExtension;
-                            baseViewModel.changeFileName(newFileName, currentFile);
-                        } else {
-                            EventBusUtils.post(new EventBusMessage<>(RequestCodeConstants.MEDIASTORE_FILENAME_UPDATE_FAILED, null));
-                        }
-                    }
-                }
-            });
-        } else {
-            EventBusUtils.post(new EventBusMessage<>(RequestCodeConstants.NEW_FILE_NAME_CAN_NOT_NULL, null));
-        }
+        baseViewModel.changeFileName(currentFile, newFileNameWithoutExtension);
         dlShowRename.dismiss();
     }
 
@@ -203,7 +173,7 @@ public abstract class BaseFragment extends Fragment
         tvDocumentPath.setText(currentFile.getPath());
         tvDocumentSize.setText(DocumentUtils.formatSize(currentFile.getSize()));
         tvDocumentType.setText(currentFile.getType());
-        tvDocumentLastModified.setText(DocumentUtils.formatTime(currentFile.getChangedTime()*1000));
+        tvDocumentLastModified.setText(DocumentUtils.formatTime(currentFile.getChangedTime() * 1000));
         btnDocumentOk.setOnClickListener(this);
 
     }
@@ -270,32 +240,11 @@ public abstract class BaseFragment extends Fragment
     }
 
     private void deleteFile() {
-        final boolean[] delete = {false};
-        int index = currentFile.getPath().lastIndexOf("/");
-        String parent = currentFile.getPath().substring(0, index);
-        File dir = new File(parent);
-        if (!dir.isDirectory()) {
-            return;
-        }
-        File[] files = dir.listFiles();
-        if (files == null) {
-            return;
-        }
-        for (File file : files) {
-            if (Objects.equals(file.getName(), currentFile.getName())) {
-                ThreadPoolManager.getInstance().executeSingle(new Runnable() {
-                    @Override
-                    public void run() {
-                        delete[0] = file.delete();
-                        baseViewModel.deleteFile(currentFile);
-                    }
-                });
-            }
-        }
-        baseViewModel.getIsFavoriteLiveData().observe(getViewLifecycleOwner(), new Observer<Integer>() {
+        baseViewModel.deleteFile(currentFile);
+        baseViewModel.getDeleteStateLiveData().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
             @Override
-            public void onChanged(Integer integer) {
-                Toast.makeText(requireActivity(), delete[0] ? getResources().getText(R.string.delete_success) : getResources().getText(R.string.delete_failed), Toast.LENGTH_SHORT).show();
+            public void onChanged(Boolean aBoolean) {
+                Toast.makeText(requireActivity(), aBoolean ? getResources().getText(R.string.delete_success) : getResources().getText(R.string.delete_failed), Toast.LENGTH_SHORT).show();
                 EventBusUtils.post(new EventBusMessage<>(RequestCodeConstants.REQUEST_REFRESH, ArrangementHelper.getViewSettings()));
             }
         });

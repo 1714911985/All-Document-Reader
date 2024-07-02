@@ -29,6 +29,7 @@ public class BaseRepository {
     private final Context context;
     private final DocumentInfoDao documentInfoDao;
     private MutableLiveData<Integer> isFavoriteLiveData = new MutableLiveData<>();
+    private MutableLiveData<Boolean> deleteStateLiveData = new MutableLiveData<>();
 
     public BaseRepository(Context context) {
         this.context = context;
@@ -52,21 +53,30 @@ public class BaseRepository {
     }
 
     public void changeFileName(String newFileName, DocumentInfo currentFile, List<DocumentInfo> allDocumentList) {
-        String newFilePath = DocumentUtils.getParentPath(currentFile.getPath()) + newFileName;
-        documentInfoDao.updateFileNameAndFilePath(currentFile.getId(), newFileName, newFilePath);
+        ThreadPoolManager.getInstance().executeSingle(new Runnable() {
+            @Override
+            public void run() {
+                String newFilePath = DocumentUtils.getParentPath(currentFile.getPath()) + newFileName;
+                documentInfoDao.updateFileNameAndFilePath(currentFile.getId(), newFileName, newFilePath);
 
-        for (DocumentInfo documentInfo : allDocumentList) {
-            if (Objects.equals(currentFile.getId(), documentInfo.getId())) {
-                documentInfo.setName(newFileName);
-                documentInfo.setPath(newFilePath);
+                for (DocumentInfo documentInfo : allDocumentList) {
+                    if (Objects.equals(currentFile.getId(), documentInfo.getId())) {
+                        documentInfo.setName(newFileName);
+                        documentInfo.setPath(newFilePath);
+                    }
+                }
+                processingMediaScanner(context, new File(currentFile.getPath()).getParent());
+                EventBusUtils.post(new EventBusMessage<>(RequestCodeConstants.DATABASE_FILENAME_UPDATE_SUCCESS, null));
             }
-        }
-        processingMediaScanner(context, new File(currentFile.getPath()).getParent());
-        EventBusUtils.post(new EventBusMessage<>(RequestCodeConstants.DATABASE_FILENAME_UPDATE_SUCCESS, null));
+        });
     }
 
     public LiveData<Integer> getIsFavoriteLiveData() {
         return isFavoriteLiveData;
+    }
+
+    public LiveData<Boolean> getDeleteStateLiveData() {
+        return deleteStateLiveData;
     }
 
 
@@ -80,7 +90,7 @@ public class BaseRepository {
             }
         }
         processingMediaScanner(context, new File(currentFile.getPath()).getParent());
-        isFavoriteLiveData.postValue(currentFile.getId());
+        deleteStateLiveData.postValue(true);
     }
 
     private void processingMediaScanner(Context context, String... path) {
