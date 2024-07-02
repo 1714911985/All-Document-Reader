@@ -27,6 +27,7 @@ import com.example.alldocunemtreader.constants.RequestCodeConstants;
 import com.example.alldocunemtreader.data.model.DocumentInfo;
 import com.example.alldocunemtreader.data.model.EventBusMessage;
 import com.example.alldocunemtreader.ui.common.ClearableEditText;
+import com.example.alldocunemtreader.ui.common.adapter.RecycleGridAdapter;
 import com.example.alldocunemtreader.ui.common.adapter.RecycleListAdapter;
 import com.example.alldocunemtreader.utils.ArrangementHelper;
 import com.example.alldocunemtreader.utils.DocumentUtils;
@@ -49,7 +50,9 @@ import java.util.concurrent.TimeUnit;
  * Description: com.example.alldocunemtreader.ui.base.BaseFragment
  */
 public abstract class BaseFragment extends Fragment
-        implements RecycleListAdapter.OnShowFileDetailsBottomSheetDialogListener, View.OnClickListener {
+        implements RecycleListAdapter.OnShowFileDetailsBottomSheetDialogListener,
+        RecycleGridAdapter.OnShowFileDetailsBottomSheetDialogListener,
+        View.OnClickListener {
     private static final String AUTHORITY = "com.example.alldocunemtreader.fileProvider";
     private static final String SHARE = "share";
 
@@ -155,13 +158,9 @@ public abstract class BaseFragment extends Fragment
         //获取文件后缀
         String fileExtension = DocumentUtils.getFileExtension(currentFile.getName());
         String newFileNameWithoutExtension = cetRenameDialogEditText.getText().toString();
-        Log.e("TAG", "newFileNameWithoutExtension: " + newFileNameWithoutExtension);
-        Log.e("TAG", "!TextUtils.isEmpty(newFileNameWithoutExtension): " + !TextUtils.isEmpty(newFileNameWithoutExtension));
         if (!TextUtils.isEmpty(newFileNameWithoutExtension)) {
             File oldFile = new File(currentFile.getPath());
-            Log.e("TAG", "changeFileName: " + currentFile.getPath());
             File newFile = new File(oldFile.getParent() + File.separator + newFileNameWithoutExtension + fileExtension);
-            Log.e("TAG", "changeFileName: " + oldFile.getParent() + File.separator + newFileNameWithoutExtension + fileExtension);
             ThreadPoolManager.getInstance().executeSingle(new Runnable() {
                 @Override
                 public void run() {
@@ -176,7 +175,6 @@ public abstract class BaseFragment extends Fragment
                 }
             });
         } else {
-            Log.e("TAG", "--------------------");
             EventBusUtils.post(new EventBusMessage<>(RequestCodeConstants.NEW_FILE_NAME_CAN_NOT_NULL, null));
         }
         dlShowRename.dismiss();
@@ -205,7 +203,7 @@ public abstract class BaseFragment extends Fragment
         tvDocumentPath.setText(currentFile.getPath());
         tvDocumentSize.setText(DocumentUtils.formatSize(currentFile.getSize()));
         tvDocumentType.setText(currentFile.getType());
-        tvDocumentLastModified.setText(DocumentUtils.formatTime(currentFile.getChangedTime()));
+        tvDocumentLastModified.setText(DocumentUtils.formatTime(currentFile.getChangedTime()*1000));
         btnDocumentOk.setOnClickListener(this);
 
     }
@@ -316,7 +314,6 @@ public abstract class BaseFragment extends Fragment
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void messageEventBusBase(EventBusMessage<List<Integer>> message) {
-        Log.e("TAG", "messageEventBusBase: " + message.getCode());
         if (Objects.equals(message.getCode(), RequestCodeConstants.NEW_FILE_NAME_CAN_NOT_NULL)) {
             if (flag) {
                 Toast.makeText(requireActivity(), getResources().getText(R.string.file_name_not_null), Toast.LENGTH_SHORT).show();

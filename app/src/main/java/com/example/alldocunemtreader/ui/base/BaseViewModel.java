@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData;
 
 import com.example.alldocunemtreader.data.model.DocumentInfo;
 import com.example.alldocunemtreader.data.repository.BaseRepository;
+import com.example.alldocunemtreader.data.repository.DocumentInfoRepository;
 
 /**
  * Author: Eccentric
@@ -16,14 +17,16 @@ import com.example.alldocunemtreader.data.repository.BaseRepository;
  */
 public class BaseViewModel extends AndroidViewModel {
     private BaseRepository baseRepository;
+    private DocumentInfoRepository documentInfoRepository;
 
-    public BaseViewModel(@NonNull Application application, BaseRepository baseRepository) {
+    public BaseViewModel(@NonNull Application application, BaseRepository baseRepository, DocumentInfoRepository documentInfoRepository) {
         super(application);
         this.baseRepository = baseRepository;
+        this.documentInfoRepository =documentInfoRepository;
     }
 
     public void switchFavoriteStatus(DocumentInfo currentFile) {
-        baseRepository.switchFavoriteStatus(currentFile);
+        baseRepository.switchFavoriteStatus(currentFile,documentInfoRepository.getCurrentCache());
     }
 
     public LiveData<Integer> getIsFavoriteLiveData() {
@@ -31,10 +34,10 @@ public class BaseViewModel extends AndroidViewModel {
     }
 
     public void changeFileName(String newFileName, DocumentInfo currentFile) {
-        baseRepository.changeFileName(newFileName, currentFile);
+        baseRepository.changeFileName(newFileName, currentFile,documentInfoRepository.getCurrentCache());
     }
 
     public void deleteFile(DocumentInfo currentFile) {
-        baseRepository.deleteFile(currentFile);
+        baseRepository.deleteFile(currentFile,documentInfoRepository.getCurrentCache());
     }
 }

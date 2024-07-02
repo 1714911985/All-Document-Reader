@@ -147,12 +147,7 @@ public class RecycleGridAdapter extends RecyclerView.Adapter<RecycleGridAdapter.
         });
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    public void updateData(List<DocumentInfo> newFilesList) {
-        this.documentInfoList.clear();
-        this.documentInfoList.addAll(newFilesList);
-        notifyDataSetChanged();
-    }
+
 
     public interface OnShowFileDetailsBottomSheetDialogListener {
         void showBottomSheetDialog(Context context, DocumentInfo currentFile);

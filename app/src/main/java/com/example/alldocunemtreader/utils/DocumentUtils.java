@@ -52,6 +52,7 @@ public class DocumentUtils {
 
     /**
      * 根据文件类型返回IconId
+     *
      * @param fileType
      * @return
      */
@@ -75,6 +76,7 @@ public class DocumentUtils {
 
     /**
      * 根据 创建时间 和 文件大小  返回格式化好的字符串
+     *
      * @param createdTime
      * @param fileSize
      * @return
@@ -85,6 +87,7 @@ public class DocumentUtils {
 
     /**
      * 根据时间返回格式化字符串
+     *
      * @param time
      * @return
      */
@@ -125,6 +128,7 @@ public class DocumentUtils {
 
     /**
      * 根据大小返回格式化好的字符串
+     *
      * @param fileSize
      * @return
      */
@@ -140,6 +144,7 @@ public class DocumentUtils {
 
     /**
      * 根据完整文件名获取不带后缀的文件名
+     *
      * @param fileName
      * @return
      */
@@ -152,6 +157,7 @@ public class DocumentUtils {
 
     /**
      * 根据完整文件名获取后缀   .xxx
+     *
      * @param fileName
      * @return
      */
@@ -164,6 +170,7 @@ public class DocumentUtils {
 
     /**
      * 把路径 转换为 Uri
+     *
      * @param context
      * @param filePath
      * @return
@@ -176,6 +183,7 @@ public class DocumentUtils {
 
     /**
      * 根据文件类型获取对应的背景颜色
+     *
      * @param fileType
      * @return
      */
@@ -199,6 +207,7 @@ public class DocumentUtils {
 
     /**
      * 根据文件路径获取对应的 MimeType
+     *
      * @param path
      * @return
      */
@@ -229,5 +238,17 @@ public class DocumentUtils {
             default:
                 return null;
         }
+    }
+
+    public static String getParentPath(String path) {
+        File file = new File(path);
+        String parentPath = file.getParent();
+        if (parentPath != null) {
+            // 确保父路径以斜杠结尾
+            if (!parentPath.endsWith(File.separator)) {
+                parentPath += File.separator;
+            }
+        }
+        return parentPath;
     }
 }

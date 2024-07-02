@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.alldocunemtreader.data.repository.DocumentInfoRepository;
 import com.example.alldocunemtreader.data.repository.ShowRecycleRepository;
 import com.example.alldocunemtreader.ui.classification.tabs.ShowRecycleViewModel;
 
@@ -25,7 +26,7 @@ public class ShowRecycleViewModelFactory implements ViewModelProvider.Factory {
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
         if (modelClass.isAssignableFrom(ShowRecycleViewModel.class)) {
-            return (T) new ShowRecycleViewModel(application, new ShowRecycleRepository(application));
+            return (T) new ShowRecycleViewModel(application, new ShowRecycleRepository(), DocumentInfoRepository.getInstance(application));
         }
         throw new IllegalArgumentException("Unknown ViewModel class");
     }

@@ -335,42 +335,9 @@ public class HomePageFragment extends Fragment implements View.OnClickListener {
      * @param documentCounts
      */
     private void setGridView(DocumentCounts documentCounts) {
-        List<GridItem> gridItemList = generateItems(documentCounts);
+        List<GridItem> gridItemList = homePageViewModel.generateItems(documentCounts);
         adapter = new GridAdapter(requireActivity(), R.layout.grid_file, gridItemList, getView());
         gvClassification.setAdapter(adapter);
-    }
-
-    private List<GridItem> generateItems(DocumentCounts documentCounts) {
-        return new ArrayList<>(Arrays.asList(
-                new GridItem(R.drawable.ic_home_all, getResources().getText(R.string.all).toString(),
-                        String.valueOf(documentCounts.getAllDocumentCount()),
-                        documentCounts.getAllDocumentCount() == 1 ?
-                                getResources().getText(R.string.file).toString() : getResources().getText(R.string.files).toString()),
-                new GridItem(R.drawable.ic_home_pdf,
-                        getResources().getText(R.string.pdf).toString(), String.valueOf(documentCounts.getAllPDFCount()),
-                        documentCounts.getAllPDFCount() == 1 ?
-                                getResources().getText(R.string.file).toString() : getResources().getText(R.string.files).toString()),
-                new GridItem(R.drawable.ic_home_doc,
-                        getResources().getText(R.string.document).toString(), String.valueOf(documentCounts.getAllDOCCount()),
-                        documentCounts.getAllDOCCount() == 1 ?
-                                getResources().getText(R.string.file).toString() : getResources().getText(R.string.files).toString()),
-                new GridItem(R.drawable.ic_home_xls,
-                        getResources().getText(R.string.xls).toString(), String.valueOf(documentCounts.getAllXLSCount()),
-                        documentCounts.getAllXLSCount() == 1 ?
-                                getResources().getText(R.string.file).toString() : getResources().getText(R.string.files).toString()),
-                new GridItem(R.drawable.ic_home_ppt,
-                        getResources().getText(R.string.ppt).toString(), String.valueOf(documentCounts.getAllPPTCount()),
-                        documentCounts.getAllPPTCount() == 1 ?
-                                getResources().getText(R.string.file).toString() : getResources().getText(R.string.files).toString()),
-                new GridItem(R.drawable.ic_home_txt,
-                        getResources().getText(R.string.txt).toString(), String.valueOf(documentCounts.getAllTXTCount()),
-                        documentCounts.getAllTXTCount() == 1 ?
-                                getResources().getText(R.string.file).toString() : getResources().getText(R.string.files).toString()),
-                new GridItem(R.drawable.ic_home_other,
-                        getResources().getText(R.string.other).toString(), String.valueOf(documentCounts.getAllOTHERCount()),
-                        documentCounts.getAllOTHERCount() == 1 ?
-                                getResources().getText(R.string.file).toString() : getResources().getText(R.string.files).toString())
-        ));
     }
 
 

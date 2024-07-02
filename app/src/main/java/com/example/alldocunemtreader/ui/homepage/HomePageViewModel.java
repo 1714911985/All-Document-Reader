@@ -11,10 +11,14 @@ import com.example.alldocunemtreader.R;
 import com.example.alldocunemtreader.constants.RequestCodeConstants;
 import com.example.alldocunemtreader.data.model.DocumentCounts;
 import com.example.alldocunemtreader.data.model.EventBusMessage;
+import com.example.alldocunemtreader.data.model.GridItem;
+import com.example.alldocunemtreader.data.repository.DocumentInfoRepository;
 import com.example.alldocunemtreader.data.repository.HomePageRepository;
 import com.example.alldocunemtreader.utils.ArrangementHelper;
 import com.example.alldocunemtreader.utils.EventBusUtils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -24,10 +28,14 @@ import java.util.List;
  */
 public class HomePageViewModel extends AndroidViewModel {
     private HomePageRepository homePageRepository;
+    private DocumentInfoRepository documentInfoRepository;
+    private Application application;
 
-    public HomePageViewModel(@NonNull Application application, HomePageRepository homePageRepository) {
+    public HomePageViewModel(@NonNull Application application, HomePageRepository homePageRepository, DocumentInfoRepository documentInfoRepository) {
         super(application);
+        this.application = application;
         this.homePageRepository = homePageRepository;
+        this.documentInfoRepository = documentInfoRepository;
     }
 
     public LiveData<DocumentCounts> getDocumentCountList() {
@@ -36,7 +44,7 @@ public class HomePageViewModel extends AndroidViewModel {
 
 
     public void fetchDocumentCounts() {
-        homePageRepository.fetchDocumentCounts();
+        homePageRepository.fetchDocumentCounts(documentInfoRepository.getCurrentCache());
     }
 
     /**
@@ -57,5 +65,39 @@ public class HomePageViewModel extends AndroidViewModel {
                 .setPopExitAnim(R.anim.common_slide_out_right)// 回退退出动画;
                 .build();
     }
+
+    public List<GridItem> generateItems(DocumentCounts documentCounts) {
+        return new ArrayList<>(Arrays.asList(
+                new GridItem(R.drawable.ic_home_all, application.getResources().getText(R.string.all).toString(),
+                        String.valueOf(documentCounts.getAllDocumentCount()),
+                        documentCounts.getAllDocumentCount() == 1 ?
+                                application.getResources().getText(R.string.file).toString() : application.getResources().getText(R.string.files).toString()),
+                new GridItem(R.drawable.ic_home_pdf,
+                        application.getResources().getText(R.string.pdf).toString(), String.valueOf(documentCounts.getAllPDFCount()),
+                        documentCounts.getAllPDFCount() == 1 ?
+                                application.getResources().getText(R.string.file).toString() : application.getResources().getText(R.string.files).toString()),
+                new GridItem(R.drawable.ic_home_doc,
+                        application.getResources().getText(R.string.document).toString(), String.valueOf(documentCounts.getAllDOCCount()),
+                        documentCounts.getAllDOCCount() == 1 ?
+                                application.getResources().getText(R.string.file).toString() : application.getResources().getText(R.string.files).toString()),
+                new GridItem(R.drawable.ic_home_xls,
+                        application.getResources().getText(R.string.xls).toString(), String.valueOf(documentCounts.getAllXLSCount()),
+                        documentCounts.getAllXLSCount() == 1 ?
+                                application.getResources().getText(R.string.file).toString() : application.getResources().getText(R.string.files).toString()),
+                new GridItem(R.drawable.ic_home_ppt,
+                        application.getResources().getText(R.string.ppt).toString(), String.valueOf(documentCounts.getAllPPTCount()),
+                        documentCounts.getAllPPTCount() == 1 ?
+                                application.getResources().getText(R.string.file).toString() : application.getResources().getText(R.string.files).toString()),
+                new GridItem(R.drawable.ic_home_txt,
+                        application.getResources().getText(R.string.txt).toString(), String.valueOf(documentCounts.getAllTXTCount()),
+                        documentCounts.getAllTXTCount() == 1 ?
+                                application.getResources().getText(R.string.file).toString() : application.getResources().getText(R.string.files).toString()),
+                new GridItem(R.drawable.ic_home_other,
+                        application.getResources().getText(R.string.other).toString(), String.valueOf(documentCounts.getAllOTHERCount()),
+                        documentCounts.getAllOTHERCount() == 1 ?
+                                application.getResources().getText(R.string.file).toString() : application.getResources().getText(R.string.files).toString())
+        ));
+    }
+
 
 }

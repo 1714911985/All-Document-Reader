@@ -24,7 +24,7 @@ public class DocumentRelatedConstants {
     public static final String TYPE_TXT = "TXT";
     public static final String TYPE_OTHER = "OTHER";
     public static final String TYPE_ALl = "ALL";
-    public static final String TYPE_FAVOTIRE = "FAVORITE";
+    public static final String TYPE_FAVORITE = "FAVORITE";
     public static final String TYPE_RECENT = "RECENT";
     public static final String TYPE_UNKNOWN = "Unknown";
 

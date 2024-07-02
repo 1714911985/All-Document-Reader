@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.alldocunemtreader.data.repository.DocumentInfoRepository;
 import com.example.alldocunemtreader.data.repository.SearchRepository;
 import com.example.alldocunemtreader.ui.search.SearchViewModel;
 
@@ -25,7 +26,7 @@ public class SearchViewModelFactory implements ViewModelProvider.Factory {
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
         if (modelClass.isAssignableFrom(SearchViewModel.class)) {
-            return (T) new SearchViewModel(application, new SearchRepository(application));
+            return (T) new SearchViewModel(application, new SearchRepository(), DocumentInfoRepository.getInstance(application));
         }
         throw new IllegalArgumentException("Unknown ViewModel class");
     }

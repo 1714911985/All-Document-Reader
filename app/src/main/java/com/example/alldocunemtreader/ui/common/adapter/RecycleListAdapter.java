@@ -1,6 +1,5 @@
 package com.example.alldocunemtreader.ui.common.adapter;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -45,13 +44,6 @@ public class RecycleListAdapter extends RecyclerView.Adapter<RecycleListAdapter.
         this.listener = listener;
         AppDatabase appDatabase = AppDatabase.getInstance(context);
         documentInfoDao = appDatabase.documentInfoDao();
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    public void updateData(List<DocumentInfo> newDocumentInfoList) {
-        this.documentInfoList.clear();
-        this.documentInfoList.addAll(newDocumentInfoList);
-        notifyDataSetChanged();
     }
 
     @NonNull

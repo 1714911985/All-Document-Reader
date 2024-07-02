@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.alldocunemtreader.data.repository.DocumentInfoRepository;
 import com.example.alldocunemtreader.data.repository.HomePageRepository;
 import com.example.alldocunemtreader.ui.homepage.HomePageViewModel;
 
@@ -25,7 +26,7 @@ public class HomePageViewModelFactory implements ViewModelProvider.Factory {
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
         if (modelClass.isAssignableFrom(HomePageViewModel.class)) {
-            return (T) new HomePageViewModel(application, new HomePageRepository(application));
+            return (T) new HomePageViewModel(application, new HomePageRepository(), DocumentInfoRepository.getInstance(application));
         }
         throw new IllegalArgumentException("Unknown ViewModel class");
     }

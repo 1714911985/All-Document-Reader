@@ -5,11 +5,15 @@ import android.content.Context;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.alldocunemtreader.constants.RequestCodeConstants;
 import com.example.alldocunemtreader.data.model.DocumentInfo;
+import com.example.alldocunemtreader.data.model.EventBusMessage;
 import com.example.alldocunemtreader.data.source.local.AppDatabase;
 import com.example.alldocunemtreader.data.source.local.DocumentInfoDao;
+import com.example.alldocunemtreader.utils.EventBusUtils;
 import com.example.alldocunemtreader.utils.ThreadPoolManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,7 +23,7 @@ import java.util.List;
  */
 public class DocumentInfoRepository {
     private Context context;
-    private MutableLiveData<List<DocumentInfo>> cacheLiveData;
+    private MutableLiveData<List<DocumentInfo>> cacheLiveData = new MutableLiveData<>();
     private DocumentInfoDao documentInfoDao;
     private static DocumentInfoRepository instance;
 
@@ -27,6 +31,7 @@ public class DocumentInfoRepository {
         this.context = context;
         AppDatabase appDatabase = AppDatabase.getInstance(context);
         documentInfoDao = appDatabase.documentInfoDao();
+        cacheLiveData.setValue(new ArrayList<>());
     }
 
     public static DocumentInfoRepository getInstance(Context context) {
@@ -36,23 +41,20 @@ public class DocumentInfoRepository {
         return instance;
     }
 
-    public LiveData<List<DocumentInfo>> getCacheLiveData(){
+    public LiveData<List<DocumentInfo>> getCacheLiveData() {
         return cacheLiveData;
     }
 
-    public List<DocumentInfo> getCurrentCache(){
+    public List<DocumentInfo> getCurrentCache() {
         return cacheLiveData.getValue();
     }
 
-    public void fetchCache(){
-        ThreadPoolManager.getInstance().executeSingle(new Runnable() {
-            @Override
-            public void run() {
-                List<DocumentInfo> allDocuments = documentInfoDao.getAllDocuments();
-                cacheLiveData.postValue(allDocuments);
-            }
-        });
-    }
+    public void fetchCache() {
+        List<DocumentInfo> allDocuments = documentInfoDao.getAllDocuments();
+        cacheLiveData.postValue(allDocuments);
+        EventBusUtils
+                .post(new EventBusMessage<>(RequestCodeConstants.REQUEST_SCAN_FINISHED, null));
 
+    }
 
 }

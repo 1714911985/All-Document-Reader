@@ -40,71 +40,59 @@ public class ScanRepository {
     }
 
     public void startScan() {
-        ThreadPoolManager.getInstance().executeSingle(new Runnable() {
-            @Override
-            public void run() {
-                ContentResolver resolver = context.getContentResolver();
-                //Table
-                Uri table = MediaStore.Files.getContentUri(EXTERNAL);
-                //Column
-                String[] column = {MediaStore.Files.FileColumns.DATA,
-                        MediaStore.Files.FileColumns.DATE_MODIFIED,
-                        MediaStore.Files.FileColumns.DATE_ADDED,
-                        MediaStore.Files.FileColumns.SIZE};
-                //Where
-                String where = assembleWhere();
-                //args
-                String[] args = getMimeTypeFromExtension();
+        ContentResolver resolver = context.getContentResolver();
+        //Table
+        Uri table = MediaStore.Files.getContentUri(EXTERNAL);
+        //Column
+        String[] column = {MediaStore.Files.FileColumns.DATA,
+                MediaStore.Files.FileColumns.DATE_MODIFIED,
+                MediaStore.Files.FileColumns.DATE_ADDED,
+                MediaStore.Files.FileColumns.SIZE};
+        //Where
+        String where = assembleWhere();
+        //args
+        String[] args = getMimeTypeFromExtension();
 
-                Cursor cursor = resolver.query(table, column, where, args,
-                        MediaStore.Files.FileColumns.DATE_MODIFIED + " DESC");
-                if (cursor != null) {
-                    int count = cursor.getCount();
-                    if (count > 0) {
-                        //扫描有结果
-                        int columnIndexOfData = cursor.
-                                getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATA);
-                        int columnIndexOfDateModified = cursor.
-                                getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATE_MODIFIED);
-                        int columnIndexOfDateAdded = cursor.
-                                getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATE_ADDED);
-                        int columnIndexOfSize = cursor.
-                                getColumnIndexOrThrow(MediaStore.Files.FileColumns.SIZE);
+        Cursor cursor = resolver.query(table, column, where, args,
+                MediaStore.Files.FileColumns.DATE_MODIFIED + " DESC");
+        if (cursor != null) {
+            int count = cursor.getCount();
+            if (count > 0) {
+                //扫描有结果
+                int columnIndexOfData = cursor.
+                        getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATA);
+                int columnIndexOfDateModified = cursor.
+                        getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATE_MODIFIED);
+                int columnIndexOfDateAdded = cursor.
+                        getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATE_ADDED);
+                int columnIndexOfSize = cursor.
+                        getColumnIndexOrThrow(MediaStore.Files.FileColumns.SIZE);
 
-                        isDelete = MMKVManager.decodeInt(MMKVKeyConstants.IS_DELETE, 0);
-                        Log.e("TAG", "decodeBool: " + isDelete);
-                        while (cursor.moveToNext()) {
-                            String pathStr = cursor.getString(columnIndexOfData);
-                            long dateModifiedLong = cursor.getLong(columnIndexOfDateModified);
-                            long dateAddedLong = cursor.getLong(columnIndexOfDateAdded);
-                            long sizeLong = cursor.getLong(columnIndexOfSize);
+                isDelete = MMKVManager.decodeInt(MMKVKeyConstants.IS_DELETE, 0);
+                while (cursor.moveToNext()) {
+                    String pathStr = cursor.getString(columnIndexOfData);
+                    long dateModifiedLong = cursor.getLong(columnIndexOfDateModified);
+                    long dateAddedLong = cursor.getLong(columnIndexOfDateAdded);
+                    long sizeLong = cursor.getLong(columnIndexOfSize);
 
-                            int index = pathStr.lastIndexOf('/');
-                            String fileName = pathStr.substring(index + 1).toLowerCase();
-                            String fileType = DocumentUtils.getFileType(fileName);
-                            DocumentInfo queryDocumentByPath = documentInfoDao.queryDocumentByPath(pathStr);
-                            if (!Objects.isNull(queryDocumentByPath)) {
-                                documentInfoDao.update(fileName, pathStr, sizeLong, fileType,
-                                        dateAddedLong, dateModifiedLong, 1-isDelete);
-                                Log.e("TAG", "update: " + (1-isDelete));
-                            } else {
-                                DocumentInfo files = new DocumentInfo(fileName, pathStr, sizeLong, fileType,
-                                        dateAddedLong, dateModifiedLong, 0L, 0, 1-isDelete);
-                                documentInfoDao.insert(files);
-                                Log.e("TAG", "insert: " + (1-isDelete));
-                            }
-                        }
+                    int index = pathStr.lastIndexOf('/');
+                    String fileName = pathStr.substring(index + 1).toLowerCase();
+                    String fileType = DocumentUtils.getFileType(fileName);
+                    DocumentInfo queryDocumentByPath = documentInfoDao.queryDocumentByPath(pathStr);
+                    if (!Objects.isNull(queryDocumentByPath)) {
+                        documentInfoDao.update(fileName, pathStr, sizeLong, fileType,
+                                dateAddedLong, dateModifiedLong, 1 - isDelete);
+                    } else {
+                        DocumentInfo files = new DocumentInfo(fileName, pathStr, sizeLong, fileType,
+                                dateAddedLong, dateModifiedLong, 0L, 0, 1 - isDelete);
+                        documentInfoDao.insert(files);
                     }
-                    cursor.close();
                 }
-                documentInfoDao.delete(isDelete);
-                Log.e("TAG", "delete: " + isDelete);
-                MMKVManager.encode(MMKVKeyConstants.IS_DELETE, 1-isDelete);
-                Log.e("TAG", "encode: " + (1-isDelete));
-                EventBusUtils
-                        .post(new EventBusMessage<>(RequestCodeConstants.REQUEST_SCAN_FINISHED, null));
             }
-        });
+            cursor.close();
+        }
+        documentInfoDao.delete(isDelete);
+        MMKVManager.encode(MMKVKeyConstants.IS_DELETE, 1 - isDelete);
     }
 
     private String[] getMimeTypeFromExtension() {

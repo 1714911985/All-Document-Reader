@@ -73,7 +73,7 @@ public class FavoriteFragment extends BaseFragment {
     }
 
     private void updateAdapter(List<Integer> message) {
-        showRecycleViewModel.searchDocumentInfoList(DocumentRelatedConstants.TYPE_FAVOTIRE, message);
+        showRecycleViewModel.searchDocumentInfoList(DocumentRelatedConstants.TYPE_FAVORITE, message);
         showRecycleViewModel.getDocumentInfoListLiveData().observe(getViewLifecycleOwner(), new Observer<List<DocumentInfo>>() {
             @Override
             public void onChanged(List<DocumentInfo> documentInfoList) {

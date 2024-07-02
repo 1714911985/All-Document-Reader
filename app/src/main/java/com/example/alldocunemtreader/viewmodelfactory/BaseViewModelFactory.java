@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.alldocunemtreader.data.repository.BaseRepository;
+import com.example.alldocunemtreader.data.repository.DocumentInfoRepository;
 import com.example.alldocunemtreader.ui.base.BaseViewModel;
 
 /**
@@ -25,7 +26,7 @@ public class BaseViewModelFactory implements ViewModelProvider.Factory {
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
         if (modelClass.isAssignableFrom(BaseViewModel.class)) {
-            return (T) new BaseViewModel(application, new BaseRepository(application));
+            return (T) new BaseViewModel(application, new BaseRepository(application), DocumentInfoRepository.getInstance(application));
         }
         throw new IllegalArgumentException("Unknown ViewModel class");
     }

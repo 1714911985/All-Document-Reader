@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.alldocunemtreader.data.model.DocumentInfo;
+import com.example.alldocunemtreader.data.repository.DocumentInfoRepository;
 import com.example.alldocunemtreader.data.repository.SearchRepository;
 
 import java.util.List;
@@ -19,14 +20,16 @@ import java.util.List;
  */
 public class SearchViewModel extends AndroidViewModel {
     private SearchRepository searchRepository;
+    private DocumentInfoRepository documentInfoRepository;
 
-    public SearchViewModel(@NonNull Application application, SearchRepository searchRepository) {
+    public SearchViewModel(@NonNull Application application, SearchRepository searchRepository, DocumentInfoRepository documentInfoRepository) {
         super(application);
         this.searchRepository = searchRepository;
+        this.documentInfoRepository = documentInfoRepository;
     }
 
     public void searchDocumentByEditText(String text) {
-        searchRepository.searchDocumentByEditText(text);
+        searchRepository.searchDocumentByEditText(text, documentInfoRepository.getCurrentCache());
     }
 
     public LiveData<List<DocumentInfo>> getDocumentInfoLiveData(){

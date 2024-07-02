@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel;
 
 import com.example.alldocunemtreader.data.repository.DocumentInfoRepository;
 import com.example.alldocunemtreader.data.repository.ScanRepository;
+import com.example.alldocunemtreader.utils.ThreadPoolManager;
 
 /**
  * Author: Eccentric
@@ -15,13 +16,21 @@ import com.example.alldocunemtreader.data.repository.ScanRepository;
  */
 public class MainViewModel extends AndroidViewModel {
     private final ScanRepository scanRepository;
+    private final DocumentInfoRepository documentInfoRepository;
 
     public MainViewModel(@NonNull Application application, ScanRepository scanRepository, DocumentInfoRepository documentInfoRepository) {
         super(application);
         this.scanRepository = scanRepository;
+        this.documentInfoRepository = documentInfoRepository;
     }
 
     public void startScan(){
-        scanRepository.startScan();
+        ThreadPoolManager.getInstance().executeSingle(new Runnable() {
+            @Override
+            public void run() {
+                scanRepository.startScan();
+                documentInfoRepository.fetchCache();
+            }
+        });
     }
 }
