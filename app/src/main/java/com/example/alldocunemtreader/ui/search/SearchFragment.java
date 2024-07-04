@@ -2,8 +2,6 @@ package com.example.alldocunemtreader.ui.search;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,8 +22,13 @@ import com.example.alldocunemtreader.data.model.DocumentInfo;
 import com.example.alldocunemtreader.ui.base.BaseFragment;
 import com.example.alldocunemtreader.ui.common.adapter.RecycleListAdapter;
 import com.example.alldocunemtreader.viewmodelfactory.SearchViewModelFactory;
+import com.jakewharton.rxbinding4.widget.RxTextView;
+import com.jakewharton.rxbinding4.widget.TextViewAfterTextChangeEvent;
 
 import java.util.List;
+
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.functions.Consumer;
 
 
 public class SearchFragment extends BaseFragment {
@@ -78,44 +81,38 @@ public class SearchFragment extends BaseFragment {
     /**
      * 监听搜索框内容变化
      */
+    @SuppressLint("CheckResult")
     private void listenEtSearchChange() {
-        etSearch.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        RxTextView.afterTextChangeEvents(etSearch)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<TextViewAfterTextChangeEvent>() {
+                    @Override
+                    public void accept(TextViewAfterTextChangeEvent textViewAfterTextChangeEvent) throws Throwable {
+                        searchAndEcho();
+                    }
+                });
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                searchAndEcho();
-            }
-        });
     }
 
     /**
      * 查询数据库并回显数据
      */
-    private void searchAndEcho(){
+    private void searchAndEcho() {
         searchViewModel.searchDocumentByEditText(etSearch.getText().toString());
         searchViewModel
                 .getDocumentInfoLiveData()
                 .observe(getViewLifecycleOwner(), new Observer<List<DocumentInfo>>() {
-            @Override
-            public void onChanged(List<DocumentInfo> documentInfos) {
-                setRecycleView(documentInfos);
-            }
-        });
+                    @Override
+                    public void onChanged(List<DocumentInfo> documentInfos) {
+                        setRecycleView(documentInfos);
+                    }
+                });
     }
 
     @SuppressLint("NotifyDataSetChanged")
     private void setRecycleView(List<DocumentInfo> filesList) {
         RecycleListAdapter recycleListAdapter =
-                new RecycleListAdapter(requireActivity(),filesList,SearchFragment.this);
+                new RecycleListAdapter(requireActivity(), filesList, SearchFragment.this);
         rvShowSearch.setAdapter(recycleListAdapter);
         rvShowSearch.setLayoutManager(new LinearLayoutManager(getContext()));
         recycleListAdapter.notifyDataSetChanged();

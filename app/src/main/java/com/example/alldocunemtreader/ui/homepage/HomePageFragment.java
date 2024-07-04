@@ -3,7 +3,6 @@ package com.example.alldocunemtreader.ui.homepage;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -45,7 +44,6 @@ import com.example.alldocunemtreader.utils.EventBusUtils;
 import com.example.alldocunemtreader.utils.LanguageChangedManager;
 import com.example.alldocunemtreader.utils.MMKVManager;
 import com.example.alldocunemtreader.utils.ThemeModeManager;
-import com.example.alldocunemtreader.utils.ThreadPoolManager;
 import com.example.alldocunemtreader.viewmodelfactory.HomePageViewModelFactory;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
@@ -54,10 +52,7 @@ import com.google.android.material.tabs.TabLayoutMediator;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class HomePageFragment extends Fragment implements View.OnClickListener {
     public static final String MIME_TYPE_TEXT_PLAIN = "text/plain";
@@ -200,8 +195,10 @@ public class HomePageFragment extends Fragment implements View.OnClickListener {
         dlThemeMode.setContentView(R.layout.dialog_theme_mode);
         Window window = dlThemeMode.getWindow();
         //设置dialog的大小
-        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        window.setWindowAnimations(R.style.DialogAnimation);
+        if (window != null) {
+            window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            window.setWindowAnimations(R.style.DialogAnimation);
+        }
         dlThemeMode.show();
 
         dlyMain.close();
@@ -252,8 +249,10 @@ public class HomePageFragment extends Fragment implements View.OnClickListener {
         dlRateUs.setContentView(R.layout.dialog_rate_us);
         Window window = dlRateUs.getWindow();
         //设置dialog的大小
-        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        window.setWindowAnimations(R.style.DialogAnimation);
+        if (window != null) {
+            window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            window.setWindowAnimations(R.style.DialogAnimation);
+        }
         dlRateUs.show();
 
         Button btnMaybeLater = dlRateUs.findViewById(R.id.btn_maybe_later);

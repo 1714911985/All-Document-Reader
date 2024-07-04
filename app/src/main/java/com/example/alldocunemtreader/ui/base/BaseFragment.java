@@ -284,9 +284,6 @@ public abstract class BaseFragment extends Fragment
                 flag = false;
                 countDown();
             }
-
         }
     }
-
-
 }
