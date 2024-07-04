@@ -19,7 +19,7 @@ import java.util.List;
  * Description: com.example.alldocunemtreader.ui.classification.ClassificationDisplayViewModel
  */
 public class ClassificationDisplayViewModel extends ViewModel {
-    private MutableLiveData<String> titleLiveData = new MutableLiveData<>();
+    private final MutableLiveData<String> titleLiveData = new MutableLiveData<>();
 
     public void setToolBarTitle(Context context, int position) {
         CharSequence title = null;
@@ -134,26 +134,5 @@ public class ClassificationDisplayViewModel extends ViewModel {
                 break;
         }
         return stringId;
-    }
-
-    public int getTextColorByPosition(int position) {
-        int textColorId = 0;
-        switch (position) {
-            case 0:
-                break;
-            case 1:
-                break;
-            case 2:
-                break;
-            case 3:
-                break;
-            case 4:
-                break;
-            case 5:
-                break;
-            case 6:
-                break;
-        }
-        return textColorId;
     }
 }

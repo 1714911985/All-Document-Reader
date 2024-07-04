@@ -22,13 +22,11 @@ import java.util.List;
  * Description: com.example.alldocunemtreader.data.repository.DocumentInfoRepository
  */
 public class DocumentInfoRepository {
-    private Context context;
-    private MutableLiveData<List<DocumentInfo>> cacheLiveData = new MutableLiveData<>();
-    private DocumentInfoDao documentInfoDao;
+    private final MutableLiveData<List<DocumentInfo>> cacheLiveData = new MutableLiveData<>();
+    private final DocumentInfoDao documentInfoDao;
     private static DocumentInfoRepository instance;
 
     private DocumentInfoRepository(Context context) {
-        this.context = context;
         AppDatabase appDatabase = AppDatabase.getInstance(context);
         documentInfoDao = appDatabase.documentInfoDao();
         cacheLiveData.setValue(new ArrayList<>());

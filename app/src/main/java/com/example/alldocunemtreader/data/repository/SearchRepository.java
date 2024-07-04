@@ -16,7 +16,7 @@ import java.util.List;
  * Description: com.example.alldocunemtreader.data.repository.SearchRepository
  */
 public class SearchRepository {
-    private MutableLiveData<List<DocumentInfo>> documentInfoLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<DocumentInfo>> documentInfoLiveData = new MutableLiveData<>();
 
     public void searchDocumentByEditText(String text, List<DocumentInfo> allDocumentList) {
         List<DocumentInfo> documentInfoList = new ArrayList<>();

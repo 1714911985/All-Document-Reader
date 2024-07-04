@@ -3,6 +3,7 @@ package com.example.alldocunemtreader.ui.homepage;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,6 +45,7 @@ import com.example.alldocunemtreader.utils.EventBusUtils;
 import com.example.alldocunemtreader.utils.LanguageChangedManager;
 import com.example.alldocunemtreader.utils.MMKVManager;
 import com.example.alldocunemtreader.utils.ThemeModeManager;
+import com.example.alldocunemtreader.utils.ThreadPoolManager;
 import com.example.alldocunemtreader.viewmodelfactory.HomePageViewModelFactory;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
@@ -55,6 +57,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class HomePageFragment extends Fragment implements View.OnClickListener {
     public static final String MIME_TYPE_TEXT_PLAIN = "text/plain";
@@ -62,17 +65,14 @@ public class HomePageFragment extends Fragment implements View.OnClickListener {
     private static final String APP_URL = "https://play.google.com/store/apps/details?id=com.example.alldocumentreader";
 
     private DrawerLayout dlyMain;
-    private ImageButton ivRefresh, ivSortNormal;
     private Toolbar tbMain;
     private GridView gvClassification;
     private TabLayout tlyCollect;
     private ViewPager2 vp2Collect;
-    private Button btnMaybeLater, btnRateNow;
     private NavigationView ngvDrawer;
     private NavController navController;
     private Dialog dlThemeMode, dlRateUs;
 
-    private GridAdapter adapter;
     private HomePageViewModel homePageViewModel;
 
     @Override
@@ -87,8 +87,7 @@ public class HomePageFragment extends Fragment implements View.OnClickListener {
         initView(view);
         init();
         initData();
-        setGridView(new DocumentCounts(0, 0, 0, 0,
-                0, 0, 0));
+        setGridView(new DocumentCounts(0, 0, 0, 0, 0, 0, 0));
         bindOpenButtonToToolBar();
         setViewPager2();
         setTabLayout();
@@ -100,7 +99,7 @@ public class HomePageFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onResume() {
         super.onResume();
-        homePageViewModel.refresh();
+        refresh();
     }
 
     private void init() {
@@ -119,8 +118,8 @@ public class HomePageFragment extends Fragment implements View.OnClickListener {
         tlyCollect = view.findViewById(R.id.tly_collect);
         vp2Collect = view.findViewById(R.id.vp2_collect);
         ngvDrawer = view.findViewById(R.id.ngv_drawer);
-        ivRefresh = view.findViewById(R.id.iv_refresh);
-        ivSortNormal = view.findViewById(R.id.iv_sort_normal);
+        ImageButton ivRefresh = view.findViewById(R.id.iv_refresh);
+        ImageButton ivSortNormal = view.findViewById(R.id.iv_sort_normal);
         ivRefresh.setOnClickListener(this);
         ivSortNormal.setOnClickListener(this);
         navController = Navigation.findNavController(view);
@@ -257,8 +256,8 @@ public class HomePageFragment extends Fragment implements View.OnClickListener {
         window.setWindowAnimations(R.style.DialogAnimation);
         dlRateUs.show();
 
-        btnMaybeLater = dlRateUs.findViewById(R.id.btn_maybe_later);
-        btnRateNow = dlRateUs.findViewById(R.id.btn_rate_now);
+        Button btnMaybeLater = dlRateUs.findViewById(R.id.btn_maybe_later);
+        Button btnRateNow = dlRateUs.findViewById(R.id.btn_rate_now);
         btnMaybeLater.setOnClickListener(this);
         btnRateNow.setOnClickListener(this);
         dlyMain.close();
@@ -318,25 +317,38 @@ public class HomePageFragment extends Fragment implements View.OnClickListener {
         startActivity(intent);
     }
 
+    /**
+     * 刷新RecycleView的排列方式和顺序
+     */
+    public void refresh() {
+        List<Integer> viewSettings = ArrangementHelper.getViewSettings();
+        //刷新
+        EventBusUtils.post(new EventBusMessage<>(RequestCodeConstants.REQUEST_REFRESH, viewSettings));
+    }
+
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void eventBusMessage(EventBusMessage eventBusMessage) {
-        homePageViewModel.fetchDocumentCounts();
-        homePageViewModel.getDocumentCountList().observe(this, new Observer<DocumentCounts>() {
-            @Override
-            public void onChanged(DocumentCounts documentCounts) {
-                setGridView(documentCounts);
-            }
-        });
+        if (eventBusMessage.getCode().equals(RequestCodeConstants.REQUEST_REFRESH) || eventBusMessage.getCode().equals(RequestCodeConstants.REQUEST_SCAN_FINISHED)) {
+            homePageViewModel.fetchDocumentCounts();
+            homePageViewModel.getDocumentCountList().observe(this, new Observer<DocumentCounts>() {
+                @Override
+                public void onChanged(DocumentCounts documentCounts) {
+                    setGridView(documentCounts);
+                    if (eventBusMessage.getCode().equals(RequestCodeConstants.REQUEST_SCAN_FINISHED)) {
+                        EventBusUtils.post(new EventBusMessage<>(RequestCodeConstants.REQUEST_REFRESH_RECENT, ArrangementHelper.getViewSettings()));
+                    }
+                }
+            });
+        }
     }
 
     /**
      * 设置GridView显示文件图标和数量
-     *
-     * @param documentCounts
      */
     private void setGridView(DocumentCounts documentCounts) {
-        List<GridItem> gridItemList = homePageViewModel.generateItems(documentCounts);
-        adapter = new GridAdapter(requireActivity(), R.layout.grid_file, gridItemList, getView());
+        List<GridItem> gridItemList = homePageViewModel.generateItems(requireActivity(), documentCounts);
+        GridAdapter adapter = new GridAdapter(requireActivity(), R.layout.grid_file, gridItemList, getView());
         gvClassification.setAdapter(adapter);
     }
 
@@ -349,11 +361,12 @@ public class HomePageFragment extends Fragment implements View.OnClickListener {
             Toast.makeText(requireActivity(), getResources().getText(R.string.thanks_for_your_rate), Toast.LENGTH_SHORT).show();
             dlRateUs.dismiss();
         } else if (v.getId() == R.id.iv_refresh) {
-            homePageViewModel.refresh();
+            refresh();
         } else if (v.getId() == R.id.iv_sort_normal) {
             ArrangementHelper.showBottomDialog(requireActivity());
         }
     }
+
 
     @Override
     public void onDestroy() {

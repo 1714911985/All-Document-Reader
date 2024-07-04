@@ -18,8 +18,8 @@ import java.util.List;
  * Description: com.example.alldocunemtreader.ui.classification.tabs.ShowRecycleViewModel
  */
 public class ShowRecycleViewModel extends AndroidViewModel {
-    private ShowRecycleRepository showRecycleRepository;
-    private DocumentInfoRepository documentInfoRepository;
+    private final ShowRecycleRepository showRecycleRepository;
+    private final DocumentInfoRepository documentInfoRepository;
 
     public ShowRecycleViewModel(@NonNull Application application, ShowRecycleRepository showRecycleRepository, DocumentInfoRepository documentInfoRepository) {
         super(application);

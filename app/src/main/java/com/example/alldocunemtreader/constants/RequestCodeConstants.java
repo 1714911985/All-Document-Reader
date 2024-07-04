@@ -12,6 +12,8 @@ public class RequestCodeConstants {
     //EventBus
     public static final Integer REQUEST_SCAN_FINISHED = 2001;
     public static final Integer REQUEST_REFRESH = 2002;
+    public static final Integer REQUEST_REFRESH_RECENT = 2003;
+
 
     //Base相关
     public final static Integer MEDIASTORE_FILENAME_UPDATE_FAILED = 3001;

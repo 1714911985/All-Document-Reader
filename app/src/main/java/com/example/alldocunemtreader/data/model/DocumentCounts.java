@@ -1,11 +1,13 @@
 package com.example.alldocunemtreader.data.model;
 
+import java.io.Serializable;
+
 /**
  * Author: Eccentric
  * Created on 2024/6/25 11:42.
  * Description: com.example.alldocunemtreader.data.model.DocumentCounts
  */
-public class DocumentCounts {
+public class DocumentCounts implements Serializable {
     private int allDocumentCount;
     private int allPDFCount;
     private int allDOCCount;

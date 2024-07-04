@@ -18,7 +18,7 @@ import java.util.Objects;
  * Description: com.example.alldocunemtreader.data.repository.ShowRecycleRepository
  */
 public class ShowRecycleRepository {
-    private MutableLiveData<List<DocumentInfo>> documentInfoListLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<DocumentInfo>> documentInfoListLiveData = new MutableLiveData<>();
 
     public void searchDocumentInfoList(String type, List<Integer> message, List<DocumentInfo> allDocumentList) {
         List<DocumentInfo> documentInfoList = selectCorrespondingDocumentInfo(type, message, allDocumentList);

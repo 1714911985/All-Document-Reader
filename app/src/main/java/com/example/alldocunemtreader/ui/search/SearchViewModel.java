@@ -19,8 +19,8 @@ import java.util.List;
  * Description: com.example.alldocunemtreader.ui.search.SearchViewModel
  */
 public class SearchViewModel extends AndroidViewModel {
-    private SearchRepository searchRepository;
-    private DocumentInfoRepository documentInfoRepository;
+    private final SearchRepository searchRepository;
+    private final DocumentInfoRepository documentInfoRepository;
 
     public SearchViewModel(@NonNull Application application, SearchRepository searchRepository, DocumentInfoRepository documentInfoRepository) {
         super(application);

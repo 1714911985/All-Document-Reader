@@ -15,8 +15,12 @@ import java.util.List;
  * Description: com.example.alldocunemtreader.data.repository.HomePageRepository
  */
 public class HomePageRepository {
-    private MutableLiveData<DocumentCounts> documentCountsLiveData = new MutableLiveData<>();
-    private DocumentCounts documentCounts;
+    private final MutableLiveData<DocumentCounts> documentCountsLiveData = new MutableLiveData<>();
+
+    public HomePageRepository() {
+        DocumentCounts documentCounts = new DocumentCounts(0, 0, 0, 0, 0, 0, 0);
+        documentCountsLiveData.postValue(documentCounts);
+    }
 
     public LiveData<DocumentCounts> getDocumentCountsLiveData() {
         return documentCountsLiveData;
@@ -50,10 +54,9 @@ public class HomePageRepository {
         }
 
 
-        documentCounts = new DocumentCounts(allDocumentCount, allPDFCount, allDOCCount,
+        DocumentCounts documentCounts = new DocumentCounts(allDocumentCount, allPDFCount, allDOCCount,
                 allXLSCount, allPPTCount, allTXTCount, allOTHERCount);
         documentCountsLiveData.postValue(documentCounts);
     }
-
 
 }

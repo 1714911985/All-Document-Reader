@@ -28,9 +28,9 @@ import java.util.Objects;
  * Description: com.example.alldocunemtreader.ui.base.BaseViewModel
  */
 public class BaseViewModel extends AndroidViewModel {
-    private BaseRepository baseRepository;
-    private DocumentInfoRepository documentInfoRepository;
-    private Application application;
+    private final BaseRepository baseRepository;
+    private final DocumentInfoRepository documentInfoRepository;
+    private final Application application;
 
     public BaseViewModel(@NonNull Application application, BaseRepository baseRepository, DocumentInfoRepository documentInfoRepository) {
         super(application);

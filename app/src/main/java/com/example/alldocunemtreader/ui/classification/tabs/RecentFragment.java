@@ -70,7 +70,8 @@ public class RecentFragment extends BaseFragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void messageEventBus(EventBusMessage<List<Integer>> message) {
-        if (Objects.equals(message.getCode(), RequestCodeConstants.REQUEST_REFRESH)) {
+        if (Objects.equals(message.getCode(), RequestCodeConstants.REQUEST_REFRESH)||
+                Objects.equals(message.getCode(), RequestCodeConstants.REQUEST_REFRESH_RECENT)) {
             updateAdapter(message.getMessage());
         }
     }

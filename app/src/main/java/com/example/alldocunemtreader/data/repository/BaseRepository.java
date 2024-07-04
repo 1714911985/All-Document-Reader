@@ -28,8 +28,8 @@ import java.util.Objects;
 public class BaseRepository {
     private final Context context;
     private final DocumentInfoDao documentInfoDao;
-    private MutableLiveData<Integer> isFavoriteLiveData = new MutableLiveData<>();
-    private MutableLiveData<Boolean> deleteStateLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Integer> isFavoriteLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> deleteStateLiveData = new MutableLiveData<>();
 
     public BaseRepository(Context context) {
         this.context = context;
