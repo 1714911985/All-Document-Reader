@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "540713075294",
+    "project_id": "myapplication-282f2",
+    "storage_bucket": "myapplication-282f2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:540713075294:android:b6d1d51f25f03934812acf",
+        "android_client_info": {
+          "package_name": "com.example.alldocunemtreader"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCZJ2lV8tfo70vwdypziww5g4ivofpCrR8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -84,4 +84,7 @@
     <string name="delete_dialog_text">您真的希望删除这个文件吗？</string>
     <string name="delete_success">删除成功!</string>
     <string name="delete_failed">删除失败!</string>
+    <string name="files_upper">文件</string>
+    <string name="on_this_device">在此设备上</string>
+    <string name="browser_more_files">浏览更多文件</string>
 </resources>

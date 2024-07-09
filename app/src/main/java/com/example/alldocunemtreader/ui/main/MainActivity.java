@@ -1,6 +1,7 @@
 package com.example.alldocunemtreader.ui.main;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,6 +13,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -29,6 +31,9 @@ import com.example.alldocunemtreader.constants.RequestCodeConstants;
 import com.example.alldocunemtreader.utils.NotificationHelper;
 import com.example.alldocunemtreader.utils.ScreenshotObserver;
 import com.example.alldocunemtreader.viewmodelfactory.MainViewModelFactory;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 public class MainActivity extends AppCompatActivity {
     private static final String PACKAGE_PREFIX = "package:";
@@ -54,7 +59,11 @@ public class MainActivity extends AppCompatActivity {
 
         //检查请求权限后扫描
         checkAndRequestPermissionThenScan();
+
+        registFirebaseMessaging();
     }
+
+
 
     private void checkAndRequestPermissionThenScan() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -127,8 +136,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean checkStoragePermission() {
-        return ContextCompat.
-                checkSelfPermission(this,
+        return ContextCompat.checkSelfPermission(this,
                         Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
                 ContextCompat.checkSelfPermission(this,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
@@ -157,6 +165,28 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
+    private void registFirebaseMessaging() {
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(new OnCompleteListener<String>() {
+                    @Override
+                    public void onComplete(@NonNull Task<String> task) {
+                        if (!task.isSuccessful()) {
+                            Log.w("TAG", "Fetching FCM registration token failed", task.getException());
+                            return;
+                        }
+
+                        // Get new FCM registration token
+                        String token = task.getResult();
+                        Log.d("TAG", token);
+
+                        // Log and toast
+                        @SuppressLint({"StringFormatInvalid", "LocalSuppress"}) String msg = getString(R.string.msg_token_fmt, token);
+                        Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
 
     @Override
     protected void onRestart() {

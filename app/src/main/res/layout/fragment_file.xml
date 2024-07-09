@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/tb_file"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:title="@string/files_upper" />
+
+    <com.example.alldocunemtreader.ui.common.FileItemView
+        android:id="@+id/fiv_device"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ripple_rectangle"
+        app:fileItemImg="@drawable/ic_phone"
+        app:fileItemName="@string/on_this_device" />
+
+    <com.example.alldocunemtreader.ui.common.FileItemView
+        android:id="@+id/fiv_more_files"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ripple_rectangle"
+        app:fileItemName="@string/browser_more_files" />
+</LinearLayout>

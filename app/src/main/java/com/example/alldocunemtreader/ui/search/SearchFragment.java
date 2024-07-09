@@ -28,6 +28,7 @@ import com.jakewharton.rxbinding4.widget.TextViewAfterTextChangeEvent;
 import java.util.List;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.functions.Consumer;
 
 
@@ -117,4 +118,5 @@ public class SearchFragment extends BaseFragment {
         rvShowSearch.setLayoutManager(new LinearLayoutManager(getContext()));
         recycleListAdapter.notifyDataSetChanged();
     }
+
 }

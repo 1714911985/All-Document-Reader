@@ -286,34 +286,12 @@ public class HomePageFragment extends Fragment implements View.OnClickListener {
                     return true;
                 } else if (item.getItemId() == R.id.item_file) {
                     //文件按钮
-                    goRecentDocument();
+                    navController.navigate(R.id.fg_file, null, homePageViewModel.getNavOptions());
                     return true;
                 }
                 return false;
             }
         });
-    }
-
-    /**
-     * 去最近使用文件界面
-     */
-    private void goRecentDocument() {
-        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType("*/*");
-        intent.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{
-                DocumentRelatedConstants.MIME_TYPE_PDF,
-                DocumentRelatedConstants.MIME_TYPE_DOC,
-                DocumentRelatedConstants.MIME_TYPE_DOCX,
-                DocumentRelatedConstants.MIME_TYPE_PPT,
-                DocumentRelatedConstants.MIME_TYPE_PPTX,
-                DocumentRelatedConstants.MIME_TYPE_XLS,
-                DocumentRelatedConstants.MIME_TYPE_XLSX,
-                DocumentRelatedConstants.MIME_TYPE_TXT,
-                DocumentRelatedConstants.MIME_TYPE_XML,
-                DocumentRelatedConstants.MIME_TYPE_JSON
-        });
-        startActivity(intent);
     }
 
     /**

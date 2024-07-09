@@ -148,7 +148,6 @@ public class RecycleGridAdapter extends RecyclerView.Adapter<RecycleGridAdapter.
     }
 
 
-
     public interface OnShowFileDetailsBottomSheetDialogListener {
         void showBottomSheetDialog(Context context, DocumentInfo currentFile);
     }

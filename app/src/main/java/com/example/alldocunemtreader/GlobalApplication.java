@@ -11,6 +11,7 @@ import com.example.alldocunemtreader.constants.MMKVKeyConstants;
 import com.example.alldocunemtreader.utils.MMKVManager;
 import com.example.alldocunemtreader.utils.NotificationHelper;
 import com.example.alldocunemtreader.utils.ThemeModeManager;
+import com.google.firebase.perf.FirebasePerformance;
 
 import java.util.Locale;
 
@@ -31,6 +32,9 @@ public class GlobalApplication extends Application {
     public void onCreate() {
         super.onCreate();
         new NotificationHelper(this).createNotificationChannel();
+        FirebasePerformance.getInstance().setPerformanceCollectionEnabled(true);
+
+
     }
 }
 

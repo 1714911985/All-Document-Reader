@@ -18,6 +18,9 @@
         <action
             android:id="@+id/action_fg_main_to_searchFragment"
             app:destination="@id/fg_search" />
+        <action
+            android:id="@+id/action_fg_main_to_fileFragment"
+            app:destination="@id/fg_file" />
     </fragment>
 
     <fragment
@@ -36,6 +39,20 @@
         android:name="com.example.alldocunemtreader.ui.search.SearchFragment"
         android:label="fragment_search"
         tools:layout="@layout/fragment_search" />
+    <fragment
+        android:id="@+id/fg_file"
+        android:name="com.example.alldocunemtreader.ui.file.FileFragment"
+        android:label="FileFragment"
+        tools:layout="@layout/fragment_file">
+        <action
+            android:id="@+id/action_fg_file_to_fg_on_this_device"
+            app:destination="@id/fg_on_this_device" />
+    </fragment>
+    <fragment
+        android:id="@+id/fg_on_this_device"
+        android:name="com.example.alldocunemtreader.ui.file.OnThisDeviceFragment"
+        android:label="fragment_on_this_device"
+        tools:layout="@layout/fragment_on_this_device" />
 
 
 </navigation>

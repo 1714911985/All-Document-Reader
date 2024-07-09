@@ -19,6 +19,8 @@ import com.example.alldocunemtreader.utils.DocumentUtils;
 import com.example.alldocunemtreader.utils.EventBusUtils;
 import com.example.alldocunemtreader.utils.MMKVManager;
 import com.example.alldocunemtreader.utils.ThreadPoolManager;
+import com.google.firebase.perf.FirebasePerformance;
+import com.google.firebase.perf.metrics.Trace;
 
 import java.util.Objects;
 
@@ -40,6 +42,8 @@ public class ScanRepository {
     }
 
     public void startScan() {
+        Trace trace = FirebasePerformance.getInstance().newTrace("文件扫描");
+        trace.start();
         ContentResolver resolver = context.getContentResolver();
         //Table
         Uri table = MediaStore.Files.getContentUri(EXTERNAL);
@@ -93,6 +97,7 @@ public class ScanRepository {
         }
         documentInfoDao.delete(isDelete);
         MMKVManager.encode(MMKVKeyConstants.IS_DELETE, 1 - isDelete);
+        trace.stop();
     }
 
     private String[] getMimeTypeFromExtension() {
