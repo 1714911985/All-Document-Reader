@@ -3,6 +3,7 @@ package com.example.alldocunemtreader.ui.homepage;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,6 +21,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
@@ -44,6 +46,7 @@ import com.example.alldocunemtreader.utils.EventBusUtils;
 import com.example.alldocunemtreader.utils.LanguageChangedManager;
 import com.example.alldocunemtreader.utils.MMKVManager;
 import com.example.alldocunemtreader.utils.ThemeModeManager;
+import com.example.alldocunemtreader.utils.ThreadPoolManager;
 import com.example.alldocunemtreader.viewmodelfactory.HomePageViewModelFactory;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
@@ -53,11 +56,15 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 public class HomePageFragment extends Fragment implements View.OnClickListener {
+    private static final long CLICK_INTERVAL = 1000;
     public static final String MIME_TYPE_TEXT_PLAIN = "text/plain";
     //分享的URL   谷歌应用商城链接+包名
     private static final String APP_URL = "https://play.google.com/store/apps/details?id=com.example.alldocumentreader";
+    private long lastClickTime = 0;
 
     private DrawerLayout dlyMain;
     private Toolbar tbMain;
@@ -66,7 +73,7 @@ public class HomePageFragment extends Fragment implements View.OnClickListener {
     private ViewPager2 vp2Collect;
     private NavigationView ngvDrawer;
     private NavController navController;
-    private Dialog dlThemeMode, dlRateUs;
+    private Dialog dlThemeMode, dlRateUs, dlRefresh;
 
     private HomePageViewModel homePageViewModel;
 
@@ -173,6 +180,7 @@ public class HomePageFragment extends Fragment implements View.OnClickListener {
                     return true;
                 } else if (item.getItemId() == R.id.item_language) {//语言切换
                     navController.navigate(R.id.fg_change_language, null, navOptions);
+                    dlyMain.closeDrawer(GravityCompat.START);
                     return true;
                 } else if (item.getItemId() == R.id.item_evaluate_us) {//评价
                     setAndShowRateUsDialog();
@@ -298,6 +306,7 @@ public class HomePageFragment extends Fragment implements View.OnClickListener {
      * 刷新RecycleView的排列方式和顺序
      */
     public void refresh() {
+
         List<Integer> viewSettings = ArrangementHelper.getViewSettings();
         //刷新
         EventBusUtils.post(new EventBusMessage<>(RequestCodeConstants.REQUEST_REFRESH, viewSettings));
@@ -332,15 +341,31 @@ public class HomePageFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
+        // 评价的也许以后
         if (v.getId() == R.id.btn_maybe_later) {
             dlRateUs.dismiss();
         } else if (v.getId() == R.id.btn_rate_now) {
+            // 评价的确认评价
             Toast.makeText(requireActivity(), getResources().getText(R.string.thanks_for_your_rate), Toast.LENGTH_SHORT).show();
             dlRateUs.dismiss();
         } else if (v.getId() == R.id.iv_refresh) {
+            // 刷新
+            if (dlRefresh == null) {
+                dlRefresh = new Dialog(requireActivity(), R.style.CustomDialogTheme);
+                dlRefresh.setCancelable(false);
+                dlRefresh.setContentView(R.layout.dialog_loading);
+            }
+            dlRefresh.show();
             refresh();
+            ThreadPoolManager.getInstance().schedule(() -> dlRefresh.dismiss(), new Random().nextInt(1001) + 500, TimeUnit.MILLISECONDS);
         } else if (v.getId() == R.id.iv_sort_normal) {
-            ArrangementHelper.showBottomDialog(requireActivity());
+            // 排序方式
+            long currentTime = System.currentTimeMillis();
+            if (currentTime - lastClickTime >= CLICK_INTERVAL) {
+                // 如果两次点击间隔小于设置的间隔时间，则忽略点击
+                ArrangementHelper.showBottomDialog(requireActivity());
+            }
+            lastClickTime = currentTime;
         }
     }
 

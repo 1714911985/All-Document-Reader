@@ -117,9 +117,8 @@ public class ChangeLanguageFragment extends Fragment implements View.OnClickList
         changeLanguageViewModel.getLanguageLiveData().observe(this, new Observer<String>() {
             @Override
             public void onChanged(String s) {
-                requireActivity().finish();
-                Intent refresh = new Intent(getActivity(), MainActivity.class);
-                startActivity(refresh);
+                NavController navController = Navigation.findNavController(requireView());
+                navController.popBackStack();
             }
         });
     }

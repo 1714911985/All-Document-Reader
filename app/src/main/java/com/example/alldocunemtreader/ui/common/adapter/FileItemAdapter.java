@@ -11,7 +11,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.alldocunemtreader.R;
+import com.example.alldocunemtreader.constants.RequestCodeConstants;
+import com.example.alldocunemtreader.data.model.EventBusMessage;
 import com.example.alldocunemtreader.data.model.FileItem;
+import com.example.alldocunemtreader.utils.EventBusUtils;
 
 import java.util.List;
 
@@ -35,6 +38,11 @@ public class FileItemAdapter extends RecyclerView.Adapter<FileItemAdapter.ViewHo
         this.fileItemList.clear();
         this.fileItemList.addAll(newFileItemList);
         this.currentParent = newParent;
+        if (fileItemList.isEmpty()) {
+            EventBusUtils.post(new EventBusMessage<>(RequestCodeConstants.REQUEST_NO_RESULTS, null));
+        }else {
+            EventBusUtils.post(new EventBusMessage<>(RequestCodeConstants.REQUEST_HAS_RESULTS, null));
+        }
         notifyDataSetChanged();
     }
 

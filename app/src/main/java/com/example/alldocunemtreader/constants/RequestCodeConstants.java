@@ -13,6 +13,9 @@ public class RequestCodeConstants {
     public static final Integer REQUEST_SCAN_FINISHED = 2001;
     public static final Integer REQUEST_REFRESH = 2002;
     public static final Integer REQUEST_REFRESH_RECENT = 2003;
+    public static final Integer REQUEST_NO_RESULTS = 2004;
+    public static final Integer REQUEST_HAS_RESULTS = 2005;
+
 
 
     //Base相关

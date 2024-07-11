@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -17,16 +18,30 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.alldocunemtreader.R;
 import com.example.alldocunemtreader.constants.DocumentRelatedConstants;
+import com.example.alldocunemtreader.constants.RequestCodeConstants;
+import com.example.alldocunemtreader.data.model.EventBusMessage;
 import com.example.alldocunemtreader.data.model.FileItem;
 import com.example.alldocunemtreader.ui.common.adapter.FileItemAdapter;
+import com.example.alldocunemtreader.utils.EventBusUtils;
 import com.example.alldocunemtreader.viewmodelfactory.OnThisDeviceViewModelFactory;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.Objects;
 
 public class OnThisDeviceFragment extends Fragment implements FileItemAdapter.FileItemClickListener {
     private Toolbar tbOnThisDevice;
     private RecyclerView rvShowFolder;
+    private NestedScrollView nsvSelectedNoResult;
     private FileItemAdapter adapter;
     private OnThisDeviceViewModel onThisDeviceViewModel;
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EventBusUtils.register(this);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -46,6 +61,7 @@ public class OnThisDeviceFragment extends Fragment implements FileItemAdapter.Fi
     private void initView(View view) {
         tbOnThisDevice = view.findViewById(R.id.tb_on_this_device);
         rvShowFolder = view.findViewById(R.id.rv_show_folder);
+        nsvSelectedNoResult = view.findViewById(R.id.nsv_selected_no_result);
     }
 
     private void initData() {
@@ -89,5 +105,20 @@ public class OnThisDeviceFragment extends Fragment implements FileItemAdapter.Fi
         if (DocumentRelatedConstants.TYPE_DIRECTORY.equals(fileItem.getType())) {
             adapter.updateAdapter(fileItem.getChildren(), fileItem);
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEventBusMessage(EventBusMessage eventBusMessage) {
+        if (Objects.equals(eventBusMessage.getCode(), RequestCodeConstants.REQUEST_NO_RESULTS)) {
+            nsvSelectedNoResult.setVisibility(View.VISIBLE);
+        } else if (Objects.equals(eventBusMessage.getCode(), RequestCodeConstants.REQUEST_HAS_RESULTS)) {
+            nsvSelectedNoResult.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBusUtils.unregister(this);
     }
 }
