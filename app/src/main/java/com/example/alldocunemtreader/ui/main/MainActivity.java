@@ -1,7 +1,7 @@
 package com.example.alldocunemtreader.ui.main;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -28,6 +28,8 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.alldocunemtreader.R;
 import com.example.alldocunemtreader.constants.RequestCodeConstants;
+import com.example.alldocunemtreader.data.model.EventBusMessage;
+import com.example.alldocunemtreader.utils.EventBusUtils;
 import com.example.alldocunemtreader.utils.NotificationHelper;
 import com.example.alldocunemtreader.utils.ScreenshotObserver;
 import com.example.alldocunemtreader.viewmodelfactory.MainViewModelFactory;
@@ -35,18 +37,25 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.Objects;
+
 public class MainActivity extends AppCompatActivity {
     private static final String PACKAGE_PREFIX = "package:";
 
     private MainViewModel mainViewModel;
     private ScreenshotObserver screenshotObserver;
     private AlertDialog goSettingDialog;
+    private Dialog dlLoading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+        EventBusUtils.register(this);
         mainViewModel = new ViewModelProvider(this,
                 new MainViewModelFactory(getApplication())).get(MainViewModel.class);
 
@@ -60,9 +69,9 @@ public class MainActivity extends AppCompatActivity {
         //检查请求权限后扫描
         checkAndRequestPermissionThenScan();
 
-        registFirebaseMessaging();
+        //注册Firebase推送通知
+        registerFirebaseMessaging();
     }
-
 
 
     private void checkAndRequestPermissionThenScan() {
@@ -78,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.R)
     private void checkAndRequestAllFilePermission() {
         if (Environment.isExternalStorageManager()) {
-            mainViewModel.startScan();
+            startScan();
         } else {
             setGoSettingDialog(this,
                     getResources().getText(R.string.need_all_file_permission).toString(),
@@ -92,13 +101,10 @@ public class MainActivity extends AppCompatActivity {
             goSettingDialog = new AlertDialog.Builder(context)
                     .setTitle(title)
                     .setCancelable(false)
-                    .setPositiveButton(getResources().getText(R.string.authorize), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            Uri uri = Uri.parse(PACKAGE_PREFIX + getPackageName());
-                            Intent intent = new Intent(action, uri);
-                            startActivityForResult(intent, requestCode);
-                        }
+                    .setPositiveButton(getResources().getText(R.string.authorize), (dialog, which) -> {
+                        Uri uri = Uri.parse(PACKAGE_PREFIX + getPackageName());
+                        Intent intent = new Intent(action, uri);
+                        startActivityForResult(intent, requestCode);
                     }).create();
         }
         goSettingDialog.show();
@@ -112,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
                 if (!Environment.isExternalStorageManager()) {
                     Toast.makeText(this, getResources().getText(R.string.no_permission), Toast.LENGTH_SHORT).show();
                 } else {
-                    mainViewModel.startScan();
+                    startScan();
                 }
             } else {
                 checkAndRequestStoragePermission();
@@ -123,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
     private void checkAndRequestStoragePermission() {
         try {
             if (checkStoragePermission()) {
-                mainViewModel.startScan();
+                startScan();
             } else {
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -137,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean checkStoragePermission() {
         return ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
+                Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
                 ContextCompat.checkSelfPermission(this,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
     }
@@ -149,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == RequestCodeConstants.REQUEST_WRITE_EXTERNAL_STORAGE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                mainViewModel.startScan();
+                startScan();
             } else {
                 if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
@@ -166,21 +172,35 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void registFirebaseMessaging() {
+    private void registerFirebaseMessaging() {
         FirebaseMessaging.getInstance().getToken()
-                .addOnCompleteListener(new OnCompleteListener<String>() {
-                    @Override
-                    public void onComplete(@NonNull Task<String> task) {
-                        if (!task.isSuccessful()) {
-                            Log.w("TAG", "Fetching FCM registration token failed", task.getException());
-                            return;
-                        }
-
-                        // Get new FCM registration token
-                        String token = task.getResult();
-                        Log.d("TAG", token);
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Log.w("TAG", "Fetching FCM registration token failed", task.getException());
+                        return;
                     }
+
+                    // Get new FCM registration token
+                    String token = task.getResult();
+                    Log.d("TAG", token);
                 });
+    }
+
+    private void startScan() {
+        if (dlLoading == null) {
+            dlLoading = new Dialog(this, R.style.CustomDialogTheme);
+            dlLoading.setContentView(R.layout.dialog_loading);
+            dlLoading.setCancelable(false);
+        }
+        dlLoading.show();
+        mainViewModel.startScan();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEventBusMessage(EventBusMessage eventBusMessage) {
+        if (Objects.equals(eventBusMessage.getCode(), RequestCodeConstants.REQUEST_SCAN_FINISHED)) {
+            dlLoading.dismiss();
+        }
     }
 
 
@@ -193,6 +213,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        EventBusUtils.unregister(this);
         ScreenshotObserver.unregisterScreenshotObserver(this, screenshotObserver);
     }
 }

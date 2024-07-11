@@ -10,10 +10,13 @@ import androidx.lifecycle.AndroidViewModel;
 
 import com.example.alldocunemtreader.R;
 import com.example.alldocunemtreader.constants.DocumentRelatedConstants;
+import com.example.alldocunemtreader.constants.RequestCodeConstants;
+import com.example.alldocunemtreader.data.model.EventBusMessage;
 import com.example.alldocunemtreader.data.model.FileItem;
 import com.example.alldocunemtreader.data.repository.DocumentInfoRepository;
 import com.example.alldocunemtreader.data.repository.ScanRepository;
 import com.example.alldocunemtreader.utils.DocumentUtils;
+import com.example.alldocunemtreader.utils.EventBusUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -56,7 +59,7 @@ public class MainViewModel extends AndroidViewModel {
                     documentInfoRepository.updateFileItemList(fileItemList);
                     return "Scan Finished";
                 }).observeOn(AndroidSchedulers.mainThread())
-                .subscribe(s -> Log.e("TAG", "accept: 结束"));
+                .subscribe(s -> EventBusUtils.post(new EventBusMessage<>(RequestCodeConstants.REQUEST_SCAN_FINISHED, null)));
 
     }
 
