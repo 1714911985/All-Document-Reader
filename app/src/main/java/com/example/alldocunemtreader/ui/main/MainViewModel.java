@@ -17,6 +17,8 @@ import com.example.alldocunemtreader.data.repository.DocumentInfoRepository;
 import com.example.alldocunemtreader.data.repository.ScanRepository;
 import com.example.alldocunemtreader.utils.DocumentUtils;
 import com.example.alldocunemtreader.utils.EventBusUtils;
+import com.google.firebase.perf.FirebasePerformance;
+import com.google.firebase.perf.metrics.Trace;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -46,6 +48,8 @@ public class MainViewModel extends AndroidViewModel {
 
     @SuppressLint("CheckResult")
     public void startScan() {
+        Trace trace = FirebasePerformance.getInstance().newTrace("文件扫描");
+        trace.start();
         Observable<Completable> scanDocument = Observable.fromCallable(() -> {
             scanRepository.startScan();
             return Completable.complete();
@@ -59,8 +63,13 @@ public class MainViewModel extends AndroidViewModel {
                     documentInfoRepository.updateFileItemList(fileItemList);
                     return "Scan Finished";
                 }).observeOn(AndroidSchedulers.mainThread())
-                .subscribe(s -> EventBusUtils.post(new EventBusMessage<>(RequestCodeConstants.REQUEST_SCAN_FINISHED, null)));
-
+                .subscribe(s -> {
+                    EventBusUtils.post(new EventBusMessage<>(RequestCodeConstants.REQUEST_SCAN_FINISHED, null));
+                    trace.stop();
+                }, throwable -> {
+                    throwable.printStackTrace();
+                    trace.stop();
+                });
     }
 
     private List<FileItem> startScan(File directory, FileItem parent) {
