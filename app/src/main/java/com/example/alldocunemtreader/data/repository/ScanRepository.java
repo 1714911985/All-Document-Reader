@@ -83,12 +83,14 @@ public class ScanRepository {
                     String fileName = pathStr.substring(index + 1).toLowerCase();
                     String fileType = DocumentUtils.getFileType(fileName);
                     DocumentInfo queryDocumentByPath = documentInfoDao.queryDocumentByPath(pathStr);
+
                     if (!Objects.isNull(queryDocumentByPath)) {
                         documentInfoDao.update(fileName, pathStr, sizeLong, fileType,
                                 dateAddedLong, dateModifiedLong, 1 - isDelete);
                     } else {
                         DocumentInfo files = new DocumentInfo(fileName, pathStr, sizeLong, fileType,
                                 dateAddedLong, dateModifiedLong, 0L, 0, 1 - isDelete);
+
                         documentInfoDao.insert(files);
                     }
                 }

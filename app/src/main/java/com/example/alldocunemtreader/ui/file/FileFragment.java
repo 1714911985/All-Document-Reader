@@ -1,11 +1,16 @@
 package com.example.alldocunemtreader.ui.file;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
@@ -35,6 +40,7 @@ public class FileFragment extends Fragment {
         setToolbarButton();
     }
 
+
     private void initView(View view) {
         tbFile = view.findViewById(R.id.tb_file);
         fivDevice = view.findViewById(R.id.fiv_device);
@@ -42,8 +48,7 @@ public class FileFragment extends Fragment {
         fivDevice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO 文件树
-                // Navigation.findNavController(view).navigate(R.id.fg_on_this_device, null, getNavOptions());
+                Navigation.findNavController(view).navigate(R.id.fg_on_this_device, null, getNavOptions());
             }
         });
 
@@ -54,6 +59,7 @@ public class FileFragment extends Fragment {
             }
         });
     }
+
 
     private void setToolbarButton() {
         tbFile.setNavigationIcon(R.drawable.ic_back_black);

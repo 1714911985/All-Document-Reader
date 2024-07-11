@@ -11,6 +11,7 @@ import com.example.alldocunemtreader.R;
 import com.example.alldocunemtreader.constants.MMKVKeyConstants;
 import com.example.alldocunemtreader.constants.RequestCodeConstants;
 import com.example.alldocunemtreader.data.model.EventBusMessage;
+import com.example.alldocunemtreader.ui.common.BottomDialogRadioButton;
 import com.example.alldocunemtreader.ui.common.BottomDialogRadioGroup;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
@@ -39,6 +40,7 @@ public class ArrangementHelper {
 
     /**
      * 展示修改排列方式和顺序的BottomSheetDialog
+     *
      * @param context
      */
     public static void showBottomDialog(Context context) {
@@ -73,7 +75,6 @@ public class ArrangementHelper {
                 //刷新
                 EventBusUtils.post(new EventBusMessage<>(RequestCodeConstants.REQUEST_REFRESH,
                         ArrangementHelper.getViewSettings()));
-                Log.e("TAG", "onClick: " );
                 bottomSheetDialog.dismiss();
             }
         });

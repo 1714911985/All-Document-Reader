@@ -33,8 +33,6 @@ public class GlobalApplication extends Application {
         super.onCreate();
         new NotificationHelper(this).createNotificationChannel();
         FirebasePerformance.getInstance().setPerformanceCollectionEnabled(true);
-
-
     }
 }
 

@@ -42,12 +42,12 @@ public class DocumentUtils {
                     return DocumentRelatedConstants.TYPE_PDF;
                 case DocumentRelatedConstants.SUFFIX_TXT:
                     return DocumentRelatedConstants.TYPE_TXT;
-                default:
+                case DocumentRelatedConstants.SUFFIX_JSON:
+                case DocumentRelatedConstants.SUFFIX_XML:
                     return DocumentRelatedConstants.TYPE_OTHER;
             }
-        } else {
-            return DocumentRelatedConstants.TYPE_UNKNOWN;
         }
+        return DocumentRelatedConstants.TYPE_UNKNOWN;
     }
 
     /**

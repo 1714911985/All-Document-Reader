@@ -27,6 +27,7 @@ public class DocumentRelatedConstants {
     public static final String TYPE_FAVORITE = "FAVORITE";
     public static final String TYPE_RECENT = "RECENT";
     public static final String TYPE_UNKNOWN = "Unknown";
+    public static final String TYPE_DIRECTORY = "Directory";
 
     public static final String MIME_TYPE_PDF = "application/pdf";
     public static final String MIME_TYPE_DOC = "application/msword";
