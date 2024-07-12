@@ -35,10 +35,10 @@ import java.util.List;
  * Description: com.example.alldocunemtreader.ui.common.adapter.RecycleListAdapter
  */
 public class RecycleListAdapter extends RecyclerView.Adapter<RecycleListAdapter.ViewHolder> {
-    private Context context;
-    private List<DocumentInfo> documentInfoList;
-    private DocumentInfoDao documentInfoDao;
-    private OnShowFileDetailsBottomSheetDialogListener listener;
+    private final Context context;
+    private final List<DocumentInfo> documentInfoList;
+    private final DocumentInfoDao documentInfoDao;
+    private final OnShowFileDetailsBottomSheetDialogListener listener;
 
     public RecycleListAdapter(Context context, List<DocumentInfo> documentInfoList,
                               OnShowFileDetailsBottomSheetDialogListener listener) {
@@ -88,8 +88,6 @@ public class RecycleListAdapter extends RecyclerView.Adapter<RecycleListAdapter.
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context, "您点击了 " + currentFile.getName() + " 文件", Toast.LENGTH_SHORT)
-                        .show();
                 toggleLastedTime(currentFile, holder);
                 Bundle bundle = new Bundle();
                 bundle.putString("documentPath", currentFile.getPath());

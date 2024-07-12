@@ -4,7 +4,6 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -33,10 +32,7 @@ import com.example.alldocunemtreader.data.model.EventBusMessage;
 import com.example.alldocunemtreader.utils.EventBusUtils;
 import com.example.alldocunemtreader.utils.NotificationHelper;
 import com.example.alldocunemtreader.utils.ScreenshotObserver;
-import com.example.alldocunemtreader.utils.ThreadPoolManager;
 import com.example.alldocunemtreader.viewmodelfactory.MainViewModelFactory;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -217,7 +213,6 @@ public class MainActivity extends AppCompatActivity {
                 Completable.timer(1, TimeUnit.SECONDS)
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(() -> {
-                            // 在主线程中执行的操作
                             dlLoading.dismiss();
                         });
             } else {
