@@ -6,11 +6,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
@@ -20,12 +20,14 @@ import com.tencent.tbs.reader.ITbsReaderCallback;
 import com.tencent.tbs.reader.TbsFileInterfaceImpl;
 
 public class PreviewFragment extends Fragment {
-    private FrameLayout mFlRoot; //内容显示区域
-    private RelativeLayout mRl; //自定义标题栏
+    private FrameLayout flyContent; //内容显示区域
+    private Toolbar tbTop;
 
     private static boolean isInit = false;
-    private String fileExt;
     private boolean isDestroyed = false;
+
+    private String fileExt;
+    private String documentPath;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -36,12 +38,37 @@ public class PreviewFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        mFlRoot = view.findViewById(R.id.content);
-        mRl = view.findViewById(R.id.reader_top);
+        initView(view);
+        initData();
 
-        String documentPath = getArguments().getString("documentPath");
+        setToolbar();
+        setEngine();
+        openExternalFilesDirDocument(documentPath);
+    }
+
+    private void initView(View view) {
+        flyContent = view.findViewById(R.id.fly_content);
+        tbTop = view.findViewById(R.id.tb_top);
+    }
+
+    private void initData() {
+        documentPath = getArguments().getString("documentPath");
         fileExt = getFileExtension(documentPath);
+    }
 
+    private void setToolbar() {
+        String documentName = getArguments().getString("documentName");
+        tbTop.setTitle(documentName);
+        tbTop.setNavigationIcon(R.drawable.ic_back);
+        tbTop.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Navigation.findNavController(v).popBackStack();
+            }
+        });
+    }
+
+    private void setEngine() {
         int ret = initEngine();
         if (ret != 0) {
             //Toast.makeText(requireActivity(), "初始化Engine失败 ret = " + ret, Toast.LENGTH_SHORT).show();
@@ -49,10 +76,8 @@ public class PreviewFragment extends Fragment {
             Toast.makeText(requireActivity(), "初始化Engine成功", Toast.LENGTH_SHORT).show();
             isInit = true;
         }
-
-        openExternalFilesDirDocument(documentPath);
-
     }
+
 
     public String getFileExtension(String filePath) {
         if (filePath == null) {
@@ -116,14 +141,14 @@ public class PreviewFragment extends Fragment {
         param.putString("fileExt", fileExt); // 文件后缀名，如文件名为test.pdf，则只需要传入"pdf"
         param.putString("tempPath", requireActivity().getExternalFilesDir("temp").getAbsolutePath());
         //调用openFileReader打开文件
-        mFlRoot.post(new Runnable() {
+        flyContent.post(new Runnable() {
             @Override
             public void run() {
-                int height = mFlRoot.getHeight();
+                int height = flyContent.getHeight();
                 // 自定义layout模式必须设置这个值，否则可能导致文档内容显示不全
                 param.putInt("set_content_view_height", height);
                 int ret = TbsFileInterfaceImpl.getInstance().openFileReader(
-                        requireActivity(), param, callback, mFlRoot);
+                        requireActivity(), param, callback, flyContent);
             }
         });
     }
@@ -134,7 +159,7 @@ public class PreviewFragment extends Fragment {
             return;
         }
         // 回收资源
-        mFlRoot.removeAllViews(); //移除内容显示区域layout
+        flyContent.removeAllViews(); //移除内容显示区域layout
         TbsFileInterfaceImpl.getInstance().closeFileReader(); //关闭fileReader
         isDestroyed = true;
     }

@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <RelativeLayout
-        android:id="@+id/reader_top"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/tb_top"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="#576B95">
-    </RelativeLayout>
+        android:layout_height="80dp"
+        android:background="#576B95"
+        android:paddingTop="20dp"
+        app:titleTextColor="@color/white"
+        tools:title="全部" />
 
-    // 内容显示区域
     <FrameLayout
-        android:id="@+id/content"
+        android:id="@+id/fly_content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent" />
 </LinearLayout>

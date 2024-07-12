@@ -3,20 +3,16 @@ package com.example.alldocunemtreader.ui.main;
 import android.annotation.SuppressLint;
 import android.app.Application;
 import android.os.Environment;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 
 import com.example.alldocunemtreader.R;
 import com.example.alldocunemtreader.constants.DocumentRelatedConstants;
-import com.example.alldocunemtreader.constants.RequestCodeConstants;
-import com.example.alldocunemtreader.data.model.EventBusMessage;
 import com.example.alldocunemtreader.data.model.FileItem;
 import com.example.alldocunemtreader.data.repository.DocumentInfoRepository;
 import com.example.alldocunemtreader.data.repository.ScanRepository;
 import com.example.alldocunemtreader.utils.DocumentUtils;
-import com.example.alldocunemtreader.utils.EventBusUtils;
 import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.perf.metrics.Trace;
 
@@ -29,7 +25,6 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
-import io.reactivex.rxjava3.functions.Consumer;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 /**

@@ -63,6 +63,6 @@ dependencies {
     implementation("com.google.firebase:firebase-perf")
     implementation 'com.google.firebase:firebase-messaging'
 
-    implementation fileTree(dir: 'libs', include: ['TbsFileSdk_base_arm64_release_1.0.5.6000030.20231109143447.aar'])
+    implementation fileTree(dir: 'libs', include: ['TbsFileSdk_bas.aar'])
 
 }

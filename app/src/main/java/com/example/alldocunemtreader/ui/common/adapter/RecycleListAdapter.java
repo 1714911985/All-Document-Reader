@@ -91,6 +91,7 @@ public class RecycleListAdapter extends RecyclerView.Adapter<RecycleListAdapter.
                 toggleLastedTime(currentFile, holder);
                 Bundle bundle = new Bundle();
                 bundle.putString("documentPath", currentFile.getPath());
+                bundle.putString("documentName", currentFile.getName());
                 Navigation.findNavController(v).navigate(R.id.fg_preview, bundle, getNavOptions());
             }
         });
