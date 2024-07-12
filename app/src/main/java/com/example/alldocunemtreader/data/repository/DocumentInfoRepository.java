@@ -47,10 +47,12 @@ public class DocumentInfoRepository {
     public void fetchCache() {
         List<DocumentInfo> allDocuments = documentInfoDao.getAllDocuments();
         cacheLiveData.postValue(allDocuments);
+        EventBusUtils.post(new EventBusMessage<>(RequestCodeConstants.REQUEST_SCAN_FINISHED, null));
     }
 
     public void updateFileItemList(List<FileItem> newFileItemList) {
         fileItemListLiveData.postValue(newFileItemList);
+        EventBusUtils.post(new EventBusMessage<>(RequestCodeConstants.REQUEST_SCAN_FILE_FINISHED,null));
     }
 
     public List<FileItem> getFileItemList() {

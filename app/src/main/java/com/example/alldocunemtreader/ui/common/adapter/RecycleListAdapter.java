@@ -2,6 +2,7 @@ package com.example.alldocunemtreader.ui.common.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.navigation.NavOptions;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.alldocunemtreader.R;
@@ -88,8 +91,21 @@ public class RecycleListAdapter extends RecyclerView.Adapter<RecycleListAdapter.
                 Toast.makeText(context, "您点击了 " + currentFile.getName() + " 文件", Toast.LENGTH_SHORT)
                         .show();
                 toggleLastedTime(currentFile, holder);
+                Bundle bundle = new Bundle();
+                bundle.putString("documentPath", currentFile.getPath());
+                Navigation.findNavController(v).navigate(R.id.fg_preview, bundle, getNavOptions());
             }
         });
+    }
+
+    public NavOptions getNavOptions() {
+        // 创建一个NavOptions实例
+        return new NavOptions.Builder()
+                .setEnterAnim(R.anim.common_slide_in_right) // 进入动画
+                .setExitAnim(R.anim.common_slide_out_left)   // 退出动画
+                .setPopEnterAnim(R.anim.common_slide_in_left) // 回退进入动画
+                .setPopExitAnim(R.anim.common_slide_out_right)// 回退退出动画;
+                .build();
     }
 
     @Override

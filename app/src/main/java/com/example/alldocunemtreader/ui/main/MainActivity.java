@@ -1,6 +1,7 @@
 package com.example.alldocunemtreader.ui.main;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -32,6 +33,7 @@ import com.example.alldocunemtreader.data.model.EventBusMessage;
 import com.example.alldocunemtreader.utils.EventBusUtils;
 import com.example.alldocunemtreader.utils.NotificationHelper;
 import com.example.alldocunemtreader.utils.ScreenshotObserver;
+import com.example.alldocunemtreader.utils.ThreadPoolManager;
 import com.example.alldocunemtreader.viewmodelfactory.MainViewModelFactory;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -41,6 +43,10 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Completable;
 
 public class MainActivity extends AppCompatActivity {
     private static final String PACKAGE_PREFIX = "package:";
@@ -49,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
     private ScreenshotObserver screenshotObserver;
     private AlertDialog goSettingDialog;
     private Dialog dlLoading;
+    private long startTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +80,11 @@ public class MainActivity extends AppCompatActivity {
         registerFirebaseMessaging();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        startTime = System.currentTimeMillis();
+    }
 
     private void checkAndRequestPermissionThenScan() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -196,10 +208,21 @@ public class MainActivity extends AppCompatActivity {
         mainViewModel.startScan();
     }
 
+    @SuppressLint("CheckResult")
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEventBusMessage(EventBusMessage eventBusMessage) {
         if (Objects.equals(eventBusMessage.getCode(), RequestCodeConstants.REQUEST_SCAN_FINISHED)) {
-            dlLoading.dismiss();
+            long overTime = System.currentTimeMillis();
+            if (overTime - startTime < 1000) {
+                Completable.timer(1, TimeUnit.SECONDS)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(() -> {
+                            // 在主线程中执行的操作
+                            dlLoading.dismiss();
+                        });
+            } else {
+                dlLoading.dismiss();
+            }
         }
     }
 

@@ -21,13 +21,20 @@
         <action
             android:id="@+id/action_fg_main_to_fileFragment"
             app:destination="@id/fg_file" />
+        <action
+            android:id="@+id/action_fg_main_to_fg_preview"
+            app:destination="@id/fg_preview" />
     </fragment>
 
     <fragment
         android:id="@+id/fg_classification_display"
         android:name="com.example.alldocunemtreader.ui.classification.ClassificationDisplayFragment"
         android:label="fragment_classification_display"
-        tools:layout="@layout/fragment_classification_display" />
+        tools:layout="@layout/fragment_classification_display">
+        <action
+            android:id="@+id/action_fg_classification_display_to_fg_preview"
+            app:destination="@id/fg_preview" />
+    </fragment>
 
     <fragment
         android:id="@+id/fg_change_language"
@@ -53,6 +60,11 @@
         android:name="com.example.alldocunemtreader.ui.file.OnThisDeviceFragment"
         android:label="fragment_on_this_device"
         tools:layout="@layout/fragment_on_this_device" />
+    <fragment
+        android:id="@+id/fg_preview"
+        android:name="com.example.alldocunemtreader.ui.preview.PreviewFragment"
+        android:label="PreviewFragment"
+        tools:layout="@layout/fragment_preview" />
 
 
 </navigation>

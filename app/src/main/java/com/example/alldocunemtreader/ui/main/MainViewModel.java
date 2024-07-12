@@ -29,6 +29,7 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.functions.Consumer;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 /**
@@ -48,27 +49,25 @@ public class MainViewModel extends AndroidViewModel {
 
     @SuppressLint("CheckResult")
     public void startScan() {
-        Trace trace = FirebasePerformance.getInstance().newTrace("文件扫描");
-        trace.start();
-        Observable<Completable> scanDocument = Observable.fromCallable(() -> {
-            scanRepository.startScan();
-            return Completable.complete();
-        }).subscribeOn(Schedulers.io());
-
-        Single<List<FileItem>> scanDirectory = Single.fromCallable(() -> startScan(Environment.getExternalStorageDirectory(), null))
-                .subscribeOn(Schedulers.io());
-
-        Observable.zip(scanDocument, scanDirectory.toObservable(), (ignore, fileItemList) -> {
+        Trace documnetTrace = FirebasePerformance.getInstance().newTrace("文档扫描");
+        documnetTrace.start();
+        Observable.fromCallable(() -> {
+                    scanRepository.startScan();
+                    return Completable.complete();
+                }).subscribeOn(Schedulers.io())
+                .subscribe(completable -> {
                     documentInfoRepository.fetchCache();
+                    documnetTrace.stop();
+                });
+
+        Trace fileTrace = FirebasePerformance.getInstance().newTrace("文件扫描");
+        fileTrace.start();
+        Single.fromCallable(() -> startScan(Environment.getExternalStorageDirectory(), null))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(fileItemList -> {
                     documentInfoRepository.updateFileItemList(fileItemList);
-                    return "Scan Finished";
-                }).observeOn(AndroidSchedulers.mainThread())
-                .subscribe(s -> {
-                    EventBusUtils.post(new EventBusMessage<>(RequestCodeConstants.REQUEST_SCAN_FINISHED, null));
-                    trace.stop();
-                }, throwable -> {
-                    throwable.printStackTrace();
-                    trace.stop();
+                    fileTrace.stop();
                 });
     }
 

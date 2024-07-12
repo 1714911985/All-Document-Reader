@@ -113,6 +113,8 @@ public class OnThisDeviceFragment extends Fragment implements FileItemAdapter.Fi
             nsvSelectedNoResult.setVisibility(View.VISIBLE);
         } else if (Objects.equals(eventBusMessage.getCode(), RequestCodeConstants.REQUEST_HAS_RESULTS)) {
             nsvSelectedNoResult.setVisibility(View.INVISIBLE);
+        } else if (Objects.equals(eventBusMessage.getCode(), RequestCodeConstants.REQUEST_SCAN_FILE_FINISHED)) {
+            adapter.updateAdapter(onThisDeviceViewModel.getFileItemList(), null);
         }
     }
 
