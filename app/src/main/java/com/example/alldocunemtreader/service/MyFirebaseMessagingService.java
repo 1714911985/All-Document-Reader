@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.net.Uri;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
@@ -17,7 +16,7 @@ import com.google.firebase.messaging.RemoteMessage;
 @SuppressLint("MissingFirebaseInstanceTokenRefresh")
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
     @Override
-    public void onMessageReceived(RemoteMessage remoteMessage) {
+    public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
 
         // 处理接收到的消息

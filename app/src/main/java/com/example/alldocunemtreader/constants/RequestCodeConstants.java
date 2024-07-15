@@ -22,4 +22,7 @@ public class RequestCodeConstants {
     public final static Integer MEDIASTORE_FILENAME_UPDATE_FAILED = 3001;
     public final static Integer NEW_FILE_NAME_CAN_NOT_NULL = 3002;
     public final static Integer DATABASE_FILENAME_UPDATE_SUCCESS = 3003;
+
+    //Intent
+    public static final int REQUEST_GO_RECENT_DOCUMENT = 4001;
 }

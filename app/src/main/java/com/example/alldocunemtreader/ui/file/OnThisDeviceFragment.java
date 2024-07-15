@@ -77,25 +77,22 @@ public class OnThisDeviceFragment extends Fragment implements FileItemAdapter.Fi
 
     private void setToolbarButton() {
         tbOnThisDevice.setNavigationIcon(R.drawable.ic_back_black);
-        tbOnThisDevice.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // 1. 拿到当前文件列表的父文件
-                FileItem currentParent = adapter.getCurrentParent();
-                if (currentParent != null) {
-                    //2. 父文件不为null  更新为父亲那一代的列表
-                    if (currentParent.getParent() != null) {
-                        // 2.1 父文件的父亲不为null 说明没到最外层
-                        adapter.updateAdapter(currentParent.getParent().getChildren(), currentParent.getParent());
-                    } else {
-                        // 2.2 父文件的父亲为null  说明父文件是最外层文件  即Environment.getExternalStorageDirectory()下的文件
-                        adapter.updateAdapter(onThisDeviceViewModel.getFileItemList(), null);
-                    }
+        tbOnThisDevice.setNavigationOnClickListener(v -> {
+            // 1. 拿到当前文件列表的父文件
+            FileItem currentParent = adapter.getCurrentParent();
+            if (currentParent != null) {
+                //2. 父文件不为null  更新为父亲那一代的列表
+                if (currentParent.getParent() != null) {
+                    // 2.1 父文件的父亲不为null 说明没到最外层
+                    adapter.updateAdapter(currentParent.getParent().getChildren(), currentParent.getParent());
                 } else {
-                    // 3. 父文件为null   直接返回
-                    NavController navController = Navigation.findNavController(requireView());
-                    navController.popBackStack();
+                    // 2.2 父文件的父亲为null  说明父文件是最外层文件  即Environment.getExternalStorageDirectory()下的文件
+                    adapter.updateAdapter(onThisDeviceViewModel.getFileItemList(), null);
                 }
+            } else {
+                // 3. 父文件为null   直接返回
+                NavController navController = Navigation.findNavController(requireView());
+                navController.popBackStack();
             }
         });
     }

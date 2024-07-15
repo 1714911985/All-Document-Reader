@@ -231,6 +231,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (dlLoading.isShowing()){
+            dlLoading.dismiss();
+        }
         EventBusUtils.unregister(this);
         ScreenshotObserver.unregisterScreenshotObserver(this, screenshotObserver);
     }

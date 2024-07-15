@@ -1,8 +1,12 @@
 package com.example.alldocunemtreader.utils;
 
 import android.annotation.SuppressLint;
+import android.content.ContentResolver;
 import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
+import android.provider.OpenableColumns;
+import android.util.Log;
 
 import androidx.core.content.FileProvider;
 
@@ -10,9 +14,14 @@ import com.example.alldocunemtreader.R;
 import com.example.alldocunemtreader.constants.DocumentRelatedConstants;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * Author: Eccentric
@@ -251,4 +260,61 @@ public class DocumentUtils {
         }
         return parentPath;
     }
+
+    /**
+     * 从uri中获取文件路径
+     *
+     * @param context
+     * @param uri
+     * @return
+     */
+    public static String getFileNameFromUri(Context context, Uri uri) {
+        ContentResolver contentResolver = context.getContentResolver();
+        String filePath = null;
+
+        try (Cursor cursor = contentResolver.query(uri, null, null, null, null)) {
+            if (cursor != null && cursor.moveToFirst()) {
+                int columnIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                filePath = cursor.getString(columnIndex);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return filePath;
+    }
+
+    public static String getPathFromUri(Context context, Uri uri) {
+        String filePath = null;
+        if (Objects.equals(uri.getScheme(), "content")) {
+            ContentResolver contentResolver = context.getContentResolver();
+            Cursor cursor = contentResolver.query(uri, null, null, null, null);
+            if (cursor != null) {
+                try {
+                    if (cursor.moveToFirst()) {
+                        int index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                        String fileName = cursor.getString(index);
+                        File cacheDir = context.getCacheDir();
+                        File file = new File(cacheDir, fileName);
+                        try (InputStream inputStream = contentResolver.openInputStream(uri);
+                             OutputStream outputStream = new FileOutputStream(file)) {
+                            byte[] buffer = new byte[4 * 1024];
+                            int read;
+                            while ((read = inputStream.read(buffer)) != -1) {
+                                outputStream.write(buffer, 0, read);
+                            }
+                            outputStream.flush();
+                        }
+                        filePath = file.getAbsolutePath();
+                    }
+                } catch (IOException e) {
+                    Log.e("FileUtils", "Error copying file", e);
+                } finally {
+                    cursor.close();
+                }
+            }
+        }
+        return filePath;
+    }
+
 }
